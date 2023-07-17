@@ -1,4 +1,5 @@
-const url = `http://localhost:3001/api/v1/products`;
+import { config } from '../config'
+const url = `${config.apiUrl}/products`;
 
 function getAllProducts() {
   return fetch(url)

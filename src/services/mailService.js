@@ -1,4 +1,5 @@
-const url = `http://localhost:3001/api/v1/mail/send`
+import { config } from '../config'
+const url = `${config.apiUrl}/mail/send`;
 
 function sendMail(body) {
   return fetch(url, {
