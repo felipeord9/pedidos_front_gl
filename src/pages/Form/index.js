@@ -13,13 +13,12 @@ import "./styles.css";
 
 function Form() {
   const { client, setClient } = useContext(ClientContext);
-  const [agencias, setAgencias] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
   const [productosAgr, setProductosAgr] = useState({
     agregados: [],
-    total: 0,
+    total: "0",
   });
   const [search, setSearch] = useState({
     idCliente: "",
@@ -27,12 +26,11 @@ function Form() {
     deliveryDate: "",
     observations: "",
   });
-  const [showModalClient, setShowModalClient] = useState(false)
-  const [showModalSeller, setShowModalSeller] = useState(false)
-  const [showModalBranch, setShowModalBranch] = useState(false)
+  const [showModalClient, setShowModalClient] = useState(false);
+  const [showModalSeller, setShowModalSeller] = useState(false);
+  const [showModalBranch, setShowModalBranch] = useState(false);
 
   useEffect(() => {
-    getAllAgencies().then((data) => setAgencias(data));
     getAllClients().then((data) => setClientes(data));
   }, []);
 
@@ -53,64 +51,84 @@ function Form() {
     });
   };
 
+  const idGeneretor = () => {
+    let numeroAleatorio = Math.floor(Math.random() * 100000000);
+    let numeroComoTexto = numeroAleatorio.toString();
+    while (numeroComoTexto.length < 8) {
+      numeroComoTexto = "0" + numeroComoTexto;
+    }
+    return numeroComoTexto;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    Swal.fire({
-      title: "¿Está seguro?",
-      text: "Se realizará el pedido de venta",
-      icon: "warning",
-      confirmButtonText: "Aceptar",
-      confirmButtonColor: "#198754",
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-    }).then(({ isConfirmed }) => {
-      if (isConfirmed) {
-        const body = {
-          client,
-          seller: sucursal.seller,
-          agency: agencia,
-          branch: sucursal,
-          products: productosAgr,
-          deliveryDate: search.deliveryDate,
-          observations: search.observations,
-        };
-        sendMail(body);
-        Swal.fire({
-          title: "¡Creación exitosa!",
-          text: "El pedido de venta se ha realizado satisfactoriamente",
-          icon: "success",
-          confirmButtonText: "Aceptar",
-          timer: 3000,
-        }).then(() => {
-          window.location.reload();
-        });
-      }
-    });
+    if (productosAgr.agregados.length <= 0) {
+      Swal.fire({
+        title: "¡Atención!",
+        text: "No hay productos en la lista, agregue al menos uno",
+        icon: "warning",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#198754",
+        timer: 2500
+      });
+    } else
+      Swal.fire({
+        title: "¿Está seguro?",
+        text: "Se realizará el pedido de venta",
+        icon: "warning",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#198754",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+      }).then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          const body = {
+            id: idGeneretor(),
+            client,
+            seller: sucursal.seller,
+            agency: agencia,
+            branch: sucursal,
+            products: productosAgr,
+            deliveryDate: search.deliveryDate,
+            observations: search.observations,
+          };
+          sendMail(body);
+          Swal.fire({
+            title: "¡Creación exitosa!",
+            text: "El pedido de venta se ha realizado satisfactoriamente",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            timer: 3000,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+      });
   };
 
   const handleShowModal = (showModal, setShowModal) => {
     Swal.fire({
-      title: 'Ingrese la contraseña',
-      input: 'password',
-      confirmButtonText: 'Ingresar',
+      title: "Ingrese la contraseña",
+      input: "password",
+      confirmButtonText: "Ingresar",
       showCancelButton: true,
-      cancelButtonText: 'Cancelar'
-    }).then(({isConfirmed, value}) => {
-      if(isConfirmed) {
-        if(value === config.secretPassword) {
-          setShowModal(!showModal)
+      cancelButtonText: "Cancelar",
+    }).then(({ isConfirmed, value }) => {
+      if (isConfirmed) {
+        if (value === config.secretPassword) {
+          setShowModal(!showModal);
         } else {
           Swal.fire({
-            title: '¡Error!',
-            text: 'La contraseña ingresada es incorrecta',
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-            timer: 2000
-          })
+            title: "¡Error!",
+            text: "La contraseña ingresada es incorrecta",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            timer: 2000,
+          });
         }
       }
-    })
-  }
+    });
+  };
 
   const refreshForm = () => {
     Swal.fire({
@@ -148,17 +166,32 @@ function Form() {
             </button>
             <ul class="dropdown-menu dropdown-menu-end p-0">
               <li>
-                <button class="dropdown-item" onClick={(e) => handleShowModal(showModalClient, setShowModalClient)}>
+                <button
+                  class="dropdown-item"
+                  onClick={(e) =>
+                    handleShowModal(showModalClient, setShowModalClient)
+                  }
+                >
                   CLIENTES
                 </button>
               </li>
               <li>
-                <button class="dropdown-item" onClick={(e) => handleShowModal(showModalBranch, setShowModalBranch)}>
+                <button
+                  class="dropdown-item"
+                  onClick={(e) =>
+                    handleShowModal(showModalBranch, setShowModalBranch)
+                  }
+                >
                   SUCURSALES
                 </button>
               </li>
               <li>
-                <button class="dropdown-item" onClick={(e) => handleShowModal(showModalSeller, setShowModalSeller)}>
+                <button
+                  class="dropdown-item"
+                  onClick={(e) =>
+                    handleShowModal(showModalSeller, setShowModalSeller)
+                  }
+                >
                   VENDEDORES
                 </button>
               </li>
@@ -166,15 +199,14 @@ function Form() {
           </div>
         </div>
       </section>
-      <ModalClients data={clientes} showModal={showModalClient} setShowModal={setShowModalClient} />
+      <ModalClients
+        data={clientes}
+        showModal={showModalClient}
+        setShowModal={setShowModalClient}
+      />
       <form className="" onSubmit={handleSubmit}>
         <div className="bg-light rounded shadow-sm p-3 mb-3">
           <div className="d-flex flex-column gap-1">
-            <div>
-              <label className="fw-bold">AGENCIA</label>
-              <ComboBox id="agencia" options={agencias} setItem={setAgencia} />
-            </div>
-            <hr className="my-1" />
             <div>
               <label className="fw-bold">CLIENTE</label>
               <div className="row row-cols-sm-2">

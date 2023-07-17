@@ -36,8 +36,7 @@ function ModalClients({ data, showModal, setShowModal }) {
               paginationComponentOptions={{
                 rowsPerPageText: "Filas por página",
                 rangeSeparatorText: "de",
-                selectAllRowsItem: true,
-                selectAllRowsItemText: "Todos",
+                selectAllRowsItem: false
               }}
             />
           </div>

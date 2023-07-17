@@ -3,7 +3,7 @@ import * as Bi from "react-icons/bi";
 import TableProducts from "../TableProducts";
 import { getAllProducts, getOneProduct } from "../../services/productService";
 
-function AddProducts({productosAgr, setProductosAgr}) {
+function AddProducts({ productosAgr, setProductosAgr }) {
   const [products, setProducts] = useState();
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [datos, setDatos] = useState({
@@ -17,6 +17,22 @@ function AddProducts({productosAgr, setProductosAgr}) {
   useEffect(() => {
     getAllProducts().then((res) => setProducts(res));
   }, []);
+
+  const formater = (number) => {
+    const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+    const rep = "$1.";
+    let arr = number.toString().split(".");
+    arr[0] = arr[0].replace(exp, rep);
+    return arr[1] ? arr.join(".") : arr[0];
+  };
+
+  const handlerChangePrice = (e) => {
+    const { id, value} = e.target
+    setDatos({
+      ...datos,
+      [id]: formater(value.split('.').join(''))
+    })
+  }
 
   const handlerChange = (e) => {
     const { id, value } = e.target;
@@ -37,11 +53,9 @@ function AddProducts({productosAgr, setProductosAgr}) {
     }
   };
 
-  const findByDescription = () => {};
-
   const handlerSubmit = (e) => {
     e.preventDefault();
-    if (!productoSeleccionado) {
+    if (!productoSeleccionado || !datos.cantidad || !datos.precio) {
       return 0;
     }
     const list = [...productosAgr.agregados];
@@ -51,9 +65,9 @@ function AddProducts({productosAgr, setProductosAgr}) {
       amount: datos.cantidad,
       um: productoSeleccionado.um,
       price: datos.precio,
-      total: datos.cantidad * datos.precio,
+      total: formater(Number(datos.cantidad) * Number(datos.precio.split('.').join(''))),
     };
-    const newTotal = productosAgr.total + newProducto.total;
+    const newTotal = formater(Number(productosAgr.total.split('.').join('')) + Number(newProducto.total.split('.').join('')));
 
     list.push(newProducto);
     setProductosAgr({
@@ -79,7 +93,9 @@ function AddProducts({productosAgr, setProductosAgr}) {
       <div className="bg-light rounded shadow-sm p-3 mb-3">
         <div>
           <label className="fw-bold">AGREGAR PRODUCTOS</label>
-          <form className="row row-cols-sm-2 row-cols-sm-3">
+          <form
+            className="row row-cols-sm-2 row-cols-sm-3" /* onSubmit={handlerSubmit} */
+          >
             <div className="col w-25">
               <label>Referencia:</label>
               <input
@@ -145,7 +161,7 @@ function AddProducts({productosAgr, setProductosAgr}) {
                 min={0}
                 value={datos.precio}
                 className="form-control form-control-sm"
-                onChange={handlerChange}
+                onChange={handlerChangePrice}
                 required
               />
             </div>
@@ -161,7 +177,7 @@ function AddProducts({productosAgr, setProductosAgr}) {
             </div>
           </form>
         </div>
-        <TableProducts list={productosAgr} setList={setProductosAgr} />
+        <TableProducts list={productosAgr} setList={setProductosAgr} formater={formater} />
       </div>
     </>
   );

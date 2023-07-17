@@ -1,20 +1,20 @@
 import { useState } from "react";
 import * as Fa from "react-icons/fa";
 
-function TableProducts({ list, setList }) {
+function TableProducts({ list, setList, formater }) {
   const deleteProductList = (e) => {
-    const {id} = e.target.parentNode
-    let newList = [...list.agregados]
-    let newTotal = list.total - newList[id].total
-    if(newList.length === 1) {
-      newList = []
+    const { id } = e.target.parentNode;
+    let newList = [...list.agregados];
+    let newTotal = formater(list.total.split('.').join('') - newList[id].total.split('.').join(''));
+    if (newList.length === 1) {
+      newList = [];
     } else {
-      newList.splice(id, 1)
+      newList.splice(id, 1);
     }
     setList({
       agregados: newList,
-      total: newTotal
-    })
+      total: newTotal,
+    });
   };
 
   return (
@@ -28,7 +28,7 @@ function TableProducts({ list, setList }) {
             <th style={{ width: 15 }}>UM</th>
             <th>Precio</th>
             <th>Valor total</th>
-            <th style={{width: 49}}></th>
+            <th style={{ width: 49 }}></th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@ function TableProducts({ list, setList }) {
             <tr>
               <td>{elem.id}</td>
               <td className="text-start">{elem.description}</td>
-              <td>{elem.amount}</td>
+              <td>{Number(elem.amount).toFixed(2)}</td>
               <td>{elem.um}</td>
               <td className="text-end">${elem.price}</td>
               <td className="text-end">${elem.total}</td>
@@ -47,7 +47,11 @@ function TableProducts({ list, setList }) {
                   className="d-flex align-items-center btn btn-danger m-auto p-0"
                   onClick={deleteProductList}
                 >
-                  <Fa.FaTrash id={index} style={{width: 30, height: 30}} className="p-2" />
+                  <Fa.FaTrash
+                    id={index}
+                    style={{ width: 30, height: 30 }}
+                    className="p-2"
+                  />
                 </button>
               </td>
             </tr>

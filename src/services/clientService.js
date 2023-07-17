@@ -1,4 +1,5 @@
-const url = `http://localhost:3001/api/v1/clients`;
+import { config } from '../config'
+const url = `${config.apiUrl}/clients`;
 
 function getAllClients() {
   return fetch(url)
@@ -17,7 +18,8 @@ function createClient(body) {
     method: 'POST',
     headers: {
       "Content-Type": 'application/json'
-    }
+    },
+    body: JSON.stringify(body)
   })
   .then(res => res.json())
   .then(res => res)
