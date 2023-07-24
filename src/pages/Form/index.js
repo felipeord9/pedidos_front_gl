@@ -93,19 +93,18 @@ function Form() {
             observations: search.observations,
           };
           createOrder(body).then(({data}) => {
+            Swal.fire({
+              title: "¡Creación exitosa!",
+              text: "El pedido de venta se ha realizado satisfactoriamente",
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              
+            }).then(() => {
+              window.location.reload();
+            });
             sendMail({
               id: idParser(data.id),
               ...body
-            }).then((data) => {
-              Swal.fire({
-                title: "¡Creación exitosa!",
-                text: "El pedido de venta se ha realizado satisfactoriamente",
-                icon: "success",
-                confirmButtonText: "Aceptar",
-                
-              }).then(() => {
-                window.location.reload();
-              });
             })
           });
         }
