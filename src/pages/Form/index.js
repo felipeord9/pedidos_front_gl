@@ -5,7 +5,7 @@ import ComboBox from "../../components/ComboBox";
 import AddProducts from "../../components/AddProducts";
 import ModalClients from "../../components/ModalClients";
 import ClientContext from "../../context/clientContext";
-import { getAllAgencies } from "../../services/agencyService";
+import { createOrder } from "../../services/orderService";
 import { getAllClients } from "../../services/clientService";
 import { sendMail } from "../../services/mailService";
 import { config } from "../../config";
@@ -51,9 +51,8 @@ function Form() {
     });
   };
 
-  const idGeneretor = () => {
-    let numeroAleatorio = Math.floor(Math.random() * 100000000);
-    let numeroComoTexto = numeroAleatorio.toString();
+  const idParser = (id) => {
+    let numeroComoTexto = id.toString();
     while (numeroComoTexto.length < 8) {
       numeroComoTexto = "0" + numeroComoTexto;
     }
@@ -69,7 +68,7 @@ function Form() {
         icon: "warning",
         confirmButtonText: "Aceptar",
         confirmButtonColor: "#198754",
-        timer: 2500
+        timer: 2500,
       });
     } else
       Swal.fire({
@@ -83,24 +82,31 @@ function Form() {
       }).then(({ isConfirmed }) => {
         if (isConfirmed) {
           const body = {
-            id: idGeneretor(),
+            //id: idGeneretor(),
             client,
             seller: sucursal.seller,
             agency: agencia,
             branch: sucursal,
             products: productosAgr,
             deliveryDate: search.deliveryDate,
+            createdAt: new Date(),
             observations: search.observations,
           };
-          sendMail(body);
-          Swal.fire({
-            title: "¡Creación exitosa!",
-            text: "El pedido de venta se ha realizado satisfactoriamente",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-            timer: 3000,
-          }).then(() => {
-            window.location.reload();
+          createOrder(body).then(({data}) => {
+            sendMail({
+              id: idParser(data.id),
+              ...body
+            }).then((data) => {
+              Swal.fire({
+                title: "¡Creación exitosa!",
+                text: "El pedido de venta se ha realizado satisfactoriamente",
+                icon: "success",
+                confirmButtonText: "Aceptar",
+                
+              }).then(() => {
+                window.location.reload();
+              });
+            })
           });
         }
       });
@@ -156,48 +162,7 @@ function Form() {
           <span className="fw-bold">Nit: 835001216</span>
           <span>Tel: 5584982 - 3155228124</span>
         </div>
-        <div className="d-flex h-100">
-          <div>
-            <button className="btn dropdown" data-bs-toggle="dropdown">
-              <IoMdOptions
-                className="text-primary"
-                style={{ width: 20, height: 20 }}
-              />
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end p-0">
-              <li>
-                <button
-                  class="dropdown-item"
-                  onClick={(e) =>
-                    handleShowModal(showModalClient, setShowModalClient)
-                  }
-                >
-                  CLIENTES
-                </button>
-              </li>
-              <li>
-                <button
-                  class="dropdown-item"
-                  onClick={(e) =>
-                    handleShowModal(showModalBranch, setShowModalBranch)
-                  }
-                >
-                  SUCURSALES
-                </button>
-              </li>
-              <li>
-                <button
-                  class="dropdown-item"
-                  onClick={(e) =>
-                    handleShowModal(showModalSeller, setShowModalSeller)
-                  }
-                >
-                  VENDEDORES
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
+        {/* 3 */}
       </section>
       <ModalClients
         data={clientes}

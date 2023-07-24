@@ -10,7 +10,7 @@ const createOrder = (body) => {
     body: JSON.stringify(body)
   })
     .then((res) => res.json())
-    .then((res) => res);
+    .then((res) => res)
 };
 
 const createItem = (body) => {
