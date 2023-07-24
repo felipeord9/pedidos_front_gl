@@ -40,6 +40,10 @@ function ComboBox({ id, options, item, setItem }) {
     //setSuggestions(options)
   };
 
+  if(!item) {
+    ref.current.selectedIndex = 0
+  }
+
   return (
     <div className="d-flex align-items-center position-relative w-100">
       <input

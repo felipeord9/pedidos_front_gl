@@ -162,7 +162,6 @@ function Form() {
           <span className="fw-bold">Nit: 835001216</span>
           <span>Tel: 5584982 - 3155228124</span>
         </div>
-        {/* 3 */}
       </section>
       <ModalClients
         data={clientes}
