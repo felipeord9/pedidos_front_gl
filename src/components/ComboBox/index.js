@@ -40,7 +40,7 @@ function ComboBox({ id, options, item, setItem }) {
     const object = JSON.parse(value);
     setItem(object);
     setInputValue(object.description);
-    //setSuggestions(options)
+    setSuggestions(options)
   };
 
 

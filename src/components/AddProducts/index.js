@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Bi from "react-icons/bi";
 import TableProducts from "../TableProducts";
-import { getAllProducts, getOneProduct } from "../../services/productService";
+import { getAllProducts } from "../../services/productService";
 
 function AddProducts({ productosAgr, setProductosAgr }) {
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [datos, setDatos] = useState({
     idProducto: "",
@@ -13,9 +14,13 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     listaPrecios: "",
     precio: "",
   });
+  const ref = useRef()
 
   useEffect(() => {
-    getAllProducts().then((res) => setProducts(res));
+    getAllProducts().then((res) => {
+      setProducts(res)
+      setSuggestions(res)
+    });
   }, []);
 
   const formater = (number) => {
@@ -27,12 +32,31 @@ function AddProducts({ productosAgr, setProductosAgr }) {
   };
 
   const handlerChangePrice = (e) => {
-    const { id, value} = e.target
+    const { id, value } = e.target;
     setDatos({
       ...datos,
-      [id]: formater(value.split('.').join(''))
+      [id]: formater(value.split(".").join("")),
+    });
+  };
+
+  const handlerChangeSuggestions = (e) => {
+    const { value } = e.target;
+    setProductoSeleccionado(null)
+    if (value !== "") {
+      const filter = products.filter((elem) =>
+        elem.description.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filter)
+    } else {
+      setSuggestions(products)
+    }
+    ref.current.selectedIndex = 0;
+    setDatos({
+      ...datos,
+      "idProducto": "",
+      "description": value
     })
-  }
+  };
 
   const handlerChange = (e) => {
     const { id, value } = e.target;
@@ -65,9 +89,14 @@ function AddProducts({ productosAgr, setProductosAgr }) {
       amount: datos.cantidad,
       um: productoSeleccionado.um,
       price: datos.precio,
-      total: formater(Number(datos.cantidad) * Number(datos.precio.split('.').join(''))),
+      total: formater(
+        Number(datos.cantidad) * Number(datos.precio.split(".").join(""))
+      ),
     };
-    const newTotal = formater(Number(productosAgr.total.split('.').join('')) + Number(newProducto.total.split('.').join('')));
+    const newTotal = formater(
+      Number(productosAgr.total.split(".").join("")) +
+        Number(newProducto.total.split(".").join(""))
+    );
 
     list.push(newProducto);
     setProductosAgr({
@@ -94,16 +123,18 @@ function AddProducts({ productosAgr, setProductosAgr }) {
         <div>
           <label className="fw-bold">AGREGAR PRODUCTOS</label>
           <form
-            className="row row-cols-sm-2 row-cols-sm-3" /* onSubmit={handlerSubmit} */
+            className="row row-cols-sm-2" /* onSubmit={handlerSubmit} */
           >
             <div className="col w-25">
               <label>Referencia:</label>
               <input
                 id="idProducto"
                 type="number"
-                value={datos.idProducto}
+                placeholder="Completa este campo!"
+                value={productoSeleccionado ? productoSeleccionado.id : datos.idProducto}
                 className="form-control form-control-sm"
                 min={1000}
+                aria-controls="off"
                 onChange={(e) => {
                   handlerChange(e);
                   findById(e);
@@ -113,13 +144,33 @@ function AddProducts({ productosAgr, setProductosAgr }) {
             </div>
             <div className="w-50">
               <label>Descripción:</label>
-              <input
-                type="description"
-                value={productoSeleccionado?.description || ""}
-                className="form-control form-control-sm"
-                disabled
-                required
-              />
+              <div className="d-flex align-items-center position-relative w-100">
+                <input
+                  id="description"
+                  type="search"
+                  autoComplete="off"
+                  placeholder="Selecciona un producto!"
+                  value={
+                    productoSeleccionado
+                      ? productoSeleccionado?.description
+                      : datos.description
+                  }
+                  onChange={handlerChangeSuggestions}
+                  className="form-control form-control-sm input-select"
+                  required={productoSeleccionado ? false : true}
+                  />
+                <select
+                  ref={ref}
+                  className="form-select form-select-sm"
+                  onChange={findById}
+                  required
+                >
+                  <option value='' selected disabled>-- SELECCIONE --</option>
+                  {suggestions.map((elem, index) => (
+                    <option key={index} value={elem.id}>{elem.description}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="w-25">
               <label>U.M.:</label>
@@ -136,14 +187,15 @@ function AddProducts({ productosAgr, setProductosAgr }) {
               <input
                 id="cantidad"
                 type="number"
+                placeholder="Completa este campo!"
                 value={datos.cantidad}
-                min={0}
+                min={1}
                 className="form-control form-control-sm"
                 onChange={handlerChange}
                 required
               />
             </div>
-            <div className="">
+            {/* <div className="">
               <label>Lista de precios:</label>
               <input
                 id="listaPrecios"
@@ -152,17 +204,18 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 autoComplete="off"
                 onChange={handlerChange}
               />
-            </div>
+            </div> */}
             <div className="">
               <label>Precio:</label>
               <input
                 id="precio"
                 type="number"
-                min={0}
+                placeholder="Completa este campo!"
+                min={50}
                 value={datos.precio}
                 className="form-control form-control-sm"
                 onChange={handlerChangePrice}
-                required
+                
               />
             </div>
             <div className="d-flex justify-content-end w-100 mt-2">
@@ -177,7 +230,11 @@ function AddProducts({ productosAgr, setProductosAgr }) {
             </div>
           </form>
         </div>
-        <TableProducts list={productosAgr} setList={setProductosAgr} formater={formater} />
+        <TableProducts
+          list={productosAgr}
+          setList={setProductosAgr}
+          formater={formater}
+        />
       </div>
     </>
   );
