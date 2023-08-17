@@ -14,12 +14,12 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     listaPrecios: "",
     precio: "",
   });
-  const ref = useRef()
+  const ref = useRef();
 
   useEffect(() => {
     getAllProducts().then((res) => {
-      setProducts(res)
-      setSuggestions(res)
+      setProducts(res);
+      setSuggestions(res);
     });
   }, []);
 
@@ -41,21 +41,21 @@ function AddProducts({ productosAgr, setProductosAgr }) {
 
   const handlerChangeSuggestions = (e) => {
     const { value } = e.target;
-    setProductoSeleccionado(null)
+    setProductoSeleccionado(null);
     if (value !== "") {
       const filter = products.filter((elem) =>
         elem.description.toLowerCase().includes(value.toLowerCase())
       );
-      setSuggestions(filter)
+      setSuggestions(filter);
     } else {
-      setSuggestions(products)
+      setSuggestions(products);
     }
     ref.current.selectedIndex = 0;
     setDatos({
       ...datos,
-      "idProducto": "",
-      "description": value
-    })
+      idProducto: "",
+      description: value,
+    });
   };
 
   const handlerChange = (e) => {
@@ -119,19 +119,21 @@ function AddProducts({ productosAgr, setProductosAgr }) {
 
   return (
     <>
-      <div className="bg-light rounded shadow-sm p-3 mb-3">
+      <div className="bg-light rounded shadow-sm p-3 mb-2">
         <div>
           <label className="fw-bold">AGREGAR PRODUCTOS</label>
-          <form
-            className="row row-cols-sm-2" /* onSubmit={handlerSubmit} */
-          >
+          <form className="row row-cols-sm-2" /* onSubmit={handlerSubmit} */>
             <div className="col w-25">
               <label>Referencia:</label>
               <input
                 id="idProducto"
                 type="number"
-                placeholder="Completa este campo!"
-                value={productoSeleccionado ? productoSeleccionado.id : datos.idProducto}
+                placeholder="Completa este campo para agregar"
+                value={
+                  productoSeleccionado
+                    ? productoSeleccionado.id
+                    : datos.idProducto
+                }
                 className="form-control form-control-sm"
                 min={1000}
                 aria-controls="off"
@@ -149,7 +151,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                   id="description"
                   type="search"
                   autoComplete="off"
-                  placeholder="Selecciona un producto!"
+                  placeholder="Selecciona un producto para agregarlo"
                   value={
                     productoSeleccionado
                       ? productoSeleccionado?.description
@@ -158,16 +160,20 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                   onChange={handlerChangeSuggestions}
                   className="form-control form-control-sm input-select"
                   required={productoSeleccionado ? false : true}
-                  />
+                />
                 <select
                   ref={ref}
                   className="form-select form-select-sm"
                   onChange={findById}
                   required
                 >
-                  <option value='' selected disabled>-- SELECCIONE --</option>
+                  <option value="" selected disabled>
+                    -- SELECCIONE --
+                  </option>
                   {suggestions.map((elem, index) => (
-                    <option key={index} value={elem.id}>{elem.description}</option>
+                    <option key={index} value={elem.id}>
+                      {elem.description}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -182,12 +188,12 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 required
               />
             </div>
-            <div className="">
+            <div className="w-50">
               <label>Cantidad:</label>
               <input
                 id="cantidad"
                 type="number"
-                placeholder="Completa este campo!"
+                placeholder="Completa este campo para agregar"
                 value={datos.cantidad}
                 min={1}
                 className="form-control form-control-sm"
@@ -205,17 +211,16 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 onChange={handlerChange}
               />
             </div> */}
-            <div className="">
+            <div className="w-50">
               <label>Precio:</label>
               <input
                 id="precio"
                 type="number"
-                placeholder="Completa este campo!"
+                placeholder="Completa este campo para agregar"
                 min={50}
                 value={datos.precio}
                 className="form-control form-control-sm"
                 onChange={handlerChangePrice}
-                
               />
             </div>
             <div className="d-flex justify-content-end w-100 mt-2">
@@ -230,12 +235,12 @@ function AddProducts({ productosAgr, setProductosAgr }) {
             </div>
           </form>
         </div>
-        <TableProducts
-          list={productosAgr}
-          setList={setProductosAgr}
-          formater={formater}
-        />
       </div>
+      <TableProducts
+        list={productosAgr}
+        setList={setProductosAgr}
+        formater={formater}
+      />
     </>
   );
 }

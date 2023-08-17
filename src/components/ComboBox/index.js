@@ -25,12 +25,14 @@ function ComboBox({ id, options, item, setItem }) {
         elem.description.toLowerCase().includes(value.toLowerCase())
       );
       if (filter.length !== 1) {
-        ref.current.selectedIndex = 0;
+        //ref.current.selectedIndex = 0;
       }
       setSuggestions(filter);
     } else {
       setSuggestions(options)
+      //ref.current.selectedIndex = 0;
     }
+    ref.current.selectedIndex = 0;
     setInputValue(value);
     setItem(null)
   };
@@ -50,6 +52,7 @@ function ComboBox({ id, options, item, setItem }) {
         type="search"
         value={item ? item.description : inputValue}
         className="form-control form-control-sm input-select"
+        placeholder={`Buscar por Razón Social`}
         onChange={handleChange}
         disabled={item ? true : false}
       />

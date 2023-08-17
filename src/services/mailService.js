@@ -4,10 +4,10 @@ const url = `${config.apiUrl}/mail/send`;
 function sendMail(body) {
   return fetch(url, {
     method: 'POST',
-    headers: {
+    /* headers: {
       'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body)
+    }, */
+    body: body
   })
   .then(res => res.json())
   .then(res => res.data)

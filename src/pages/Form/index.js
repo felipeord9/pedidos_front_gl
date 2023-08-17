@@ -1,21 +1,18 @@
-import { useEffect, useState, useContext } from "react";
-import { IoMdOptions } from "react-icons/io";
+import { useEffect, useState, useContext, useRef } from "react";
 import Swal from "sweetalert2";
 import ComboBox from "../../components/ComboBox";
 import AddProducts from "../../components/AddProducts";
-import ModalClients from "../../components/ModalClients";
 import ClientContext from "../../context/clientContext";
 import { createOrder } from "../../services/orderService";
 import { getAllClients } from "../../services/clientService";
 import { sendMail } from "../../services/mailService";
-import { config } from "../../config";
 import "./styles.css";
 
 function Form() {
   const { client, setClient } = useContext(ClientContext);
   const [clientes, setClientes] = useState([]);
-  const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
+  const [files, setFiles] = useState(null);
   const [productosAgr, setProductosAgr] = useState({
     agregados: [],
     total: "0",
@@ -25,10 +22,9 @@ function Form() {
     descCliente: "",
     deliveryDate: "",
     observations: "",
+    order: "",
   });
-  const [showModalClient, setShowModalClient] = useState(false);
-  const [showModalSeller, setShowModalSeller] = useState(false);
-  const [showModalBranch, setShowModalBranch] = useState(false);
+  const selectBranchRef = useRef();
 
   useEffect(() => {
     getAllClients().then((data) => setClientes(data));
@@ -40,6 +36,8 @@ function Form() {
       setItem(item);
     } else {
       setItem(null);
+      setSucursal(null);
+      selectBranchRef.current.selectedIndex = 0;
     }
   };
 
@@ -57,6 +55,18 @@ function Form() {
       numeroComoTexto = "0" + numeroComoTexto;
     }
     return numeroComoTexto;
+  };
+
+  const getFiles = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const nameFile = file.name.split(".");
+      const ext = nameFile[nameFile.length - 1];
+      const newFile = new File([file], `Archivo-Adjunto.${ext}`, {
+        type: file.type,
+      });
+      setFiles(newFile);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -81,59 +91,44 @@ function Form() {
         cancelButtonText: "Cancelar",
       }).then(({ isConfirmed }) => {
         if (isConfirmed) {
+          const f = new FormData();
           const body = {
-            //id: idGeneretor(),
             client,
             seller: sucursal.seller,
-            agency: agencia,
             branch: sucursal,
             products: productosAgr,
             deliveryDate: search.deliveryDate,
             createdAt: new Date(),
             observations: search.observations,
+            purchaseOrder: search.order,
+            //file: JSON.stringify(files),
           };
-          createOrder(body).then(({data}) => {
+          files && f.append("file", files);
+          createOrder(body).then(({ data }) => {
             Swal.fire({
               title: "¡Creación exitosa!",
               text: "El pedido de venta se ha realizado satisfactoriamente",
               icon: "success",
               confirmButtonText: "Aceptar",
-              
             }).then(() => {
               window.location.reload();
             });
-            sendMail({
+            /* sendMail({
               id: idParser(data.id),
-              ...body
-            })
+              ...body,
+            }); */
+            f.append(
+              "info",
+              JSON.stringify({
+                id: idParser(data.id),
+                ...body,
+              })
+            );
+            sendMail(f);
           });
         }
       });
   };
-
-/*   const handleShowModal = (showModal, setShowModal) => {
-    Swal.fire({
-      title: "Ingrese la contraseña",
-      input: "password",
-      confirmButtonText: "Ingresar",
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-    }).then(({ isConfirmed, value }) => {
-      if (isConfirmed) {
-        if (value === config.secretPassword) {
-          setShowModal(!showModal);
-        } else {
-          Swal.fire({
-            title: "¡Error!",
-            text: "La contraseña ingresada es incorrecta",
-            icon: "error",
-            confirmButtonText: "Aceptar",
-            timer: 2000,
-          });
-        }
-      }
-    });
-  }; */
 
   const refreshForm = () => {
     Swal.fire({
@@ -162,11 +157,6 @@ function Form() {
           <span>Tel: 5584982 - 3155228124</span>
         </div>
       </section>
-      <ModalClients
-        data={clientes}
-        showModal={showModalClient}
-        setShowModal={setShowModalClient}
-      />
       <form className="" onSubmit={handleSubmit}>
         <div className="bg-light rounded shadow-sm p-3 mb-3">
           <div className="d-flex flex-column gap-1">
@@ -180,6 +170,7 @@ function Form() {
                     type="number"
                     value={client ? client.id : search.idCliente}
                     className="form-control form-control-sm"
+                    placeholder="Buscar por NIT/Cédula"
                     onChange={(e) => {
                       const { value } = e.target;
                       handlerChangeSearch(e);
@@ -201,11 +192,27 @@ function Form() {
               </div>
               <div>
                 <label>Sucursal</label>
-                <ComboBox
+                <select
+                  ref={selectBranchRef}
+                  className="form-select form-select-sm"
+                  onChange={(e) => setSucursal(JSON.parse(e.target.value))}
+                  disabled={client ? false : true}
+                  required
+                >
+                  <option selected value="" disabled></option>
+                  {client?.branches
+                    .sort((a, b) => a.branch - b.branch)
+                    .map((elem) => (
+                      <option id={elem.id} value={JSON.stringify(elem)}>
+                        {elem.branch + " - " + elem.description}
+                      </option>
+                    ))}
+                </select>
+                {/* <ComboBox
                   options={client ? client.branches : []}
                   id="sucursal"
                   setItem={setSucursal}
-                />
+                /> */}
               </div>
             </div>
             <hr className="my-1" />
@@ -213,7 +220,6 @@ function Form() {
               <label className="fw-bold">VENDEDOR</label>
               <div className="row">
                 <div className="d-flex flex-column align-items-start">
-                  <label for="idVendedor">Código:</label>
                   <input
                     id="idVendedor"
                     type="text"
@@ -229,17 +235,44 @@ function Form() {
               </div>
             </div>
             <hr className="my-1" />
-            <div>
-              <label className="fw-bold">FECHA ENTREGA</label>
-              <input
-                id="deliveryDate"
-                type="date"
-                className="form-control form-control-sm"
-                value={search.deliveryDate}
-                onChange={handlerChangeSearch}
-                min={new Date().toLocaleDateString("en-CA")}
-                required
-              />
+            <div className="d-flex flex-row gap-4">
+              <div className="w-100">
+                <label className="fw-bold">ORDEN DE COMPRA</label>
+                <input
+                  id="order"
+                  type="text"
+                  className="form-control form-control-sm"
+                  value={search.order}
+                  onChange={handlerChangeSearch}
+                  required
+                />
+              </div>
+              <div className="w-100">
+                <label className="fw-bold">FECHA ENTREGA</label>
+                <input
+                  id="deliveryDate"
+                  type="date"
+                  className="form-control form-control-sm"
+                  value={search.deliveryDate}
+                  onChange={handlerChangeSearch}
+                  min={new Date().toLocaleDateString("en-CA")}
+                  required
+                />
+              </div>
+            </div>
+            <div className="w-100">
+              <label className="fw-bold">ARCHIVOS ADJUNTOS</label>
+              <div className="row">
+                <div className="d-flex flex-column align-items-start">
+                  <input
+                    id="files"
+                    type="file"
+                    className="form-control form-control-sm w-100"
+                    accept=".pdf, .xls, .xlsx"
+                    onChange={getFiles}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

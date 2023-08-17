@@ -18,9 +18,10 @@ function TableProducts({ list, setList, formater }) {
   };
 
   return (
-    <div className="table-responsive mt-2">
-      <table className="table table-light table-bordered table-striped table-hover align-middle text-center m-0">
-        <thead>
+    <div className="table-responsive mt-2 mb-3 rounded">
+      <table className="table table-bordered table-hover align-middle text-center m-0 caption-top">
+      <caption>PRODUCTOS AGREGADOS</caption>
+        <thead className="table-light">
           <tr>
             <th style={{ width: 15 }}>Ref.</th>
             <th>Descripción</th>
