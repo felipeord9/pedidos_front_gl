@@ -244,8 +244,7 @@ function Form() {
                   className="form-control form-control-sm"
                   value={search.order}
                   onChange={handlerChangeSearch}
-                  required
-                />
+              />
               </div>
               <div className="w-100">
                 <label className="fw-bold">FECHA ENTREGA</label>
