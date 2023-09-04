@@ -1,5 +1,5 @@
 import { config } from "../config";
-const url = `${config.apiUrl}/orders`;
+const url = `${config.apiUrl2}/orders`;
 
 const createOrder = (body) => {
   return fetch(url, {

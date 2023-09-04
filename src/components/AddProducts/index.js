@@ -44,7 +44,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     setProductoSeleccionado(null);
     if (value !== "") {
       const filter = products.filter((elem) =>
-        elem.description.toLowerCase().includes(value.toLowerCase())
+        elem.item.descripcion.toLowerCase().includes(value.toLowerCase())
       );
       setSuggestions(filter);
     } else {
@@ -68,7 +68,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
 
   const findById = (e) => {
     const { value } = e.target;
-    const item = products.find((elem) => elem.id === parseInt(value));
+    const item = products.find((elem) => parseInt(elem.item.codigo) === parseInt(value));
 
     if (item) {
       setProductoSeleccionado(item);
@@ -84,10 +84,10 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     }
     const list = [...productosAgr.agregados];
     const newProducto = {
-      id: productoSeleccionado.id,
-      description: productoSeleccionado.description,
-      amount: datos.cantidad,
-      um: productoSeleccionado.um,
+      id: productoSeleccionado.item.codigo,
+      description: productoSeleccionado.item.descripcion,
+      amount: Number(datos.cantidad),
+      um: productoSeleccionado.item.um,
       price: datos.precio,
       total: formater(
         Number(datos.cantidad) * Number(datos.precio.split(".").join(""))
@@ -105,8 +105,9 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     });
     cleanForm();
   };
-
+  
   const cleanForm = () => {
+    setSuggestions(products)
     setProductoSeleccionado(null);
     setDatos({
       idProducto: "",
@@ -131,7 +132,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 placeholder="Completa este campo para agregar"
                 value={
                   productoSeleccionado
-                    ? productoSeleccionado.id
+                    ? parseInt(productoSeleccionado.item.codigo)
                     : datos.idProducto
                 }
                 className="form-control form-control-sm"
@@ -154,7 +155,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                   placeholder="Selecciona un producto para agregarlo"
                   value={
                     productoSeleccionado
-                      ? productoSeleccionado?.description
+                      ? productoSeleccionado?.item.descripcion
                       : datos.description
                   }
                   onChange={handlerChangeSuggestions}
@@ -170,9 +171,9 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                   <option value="" selected disabled>
                     -- SELECCIONE --
                   </option>
-                  {suggestions.map((elem, index) => (
-                    <option key={index} value={elem.id}>
-                      {elem.description}
+                  {suggestions.sort((a, b) => parseInt(a.item.codigo) - parseInt(b.item.codigo)).map((elem, index) => (
+                    <option key={index} value={elem.item.codigo}>
+                      {elem.item.codigo} - {elem.item.descripcion}
                     </option>
                   ))}
                 </select>
@@ -182,7 +183,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
               <label>U.M.:</label>
               <input
                 type="text"
-                value={productoSeleccionado?.um || ""}
+                value={productoSeleccionado?.item.um || ""}
                 className="form-control form-control-sm"
                 disabled
                 required
@@ -195,7 +196,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 type="number"
                 placeholder="Completa este campo para agregar"
                 value={datos.cantidad}
-                min={1}
+                min={0.1}
                 className="form-control form-control-sm"
                 onChange={handlerChange}
                 required
@@ -223,13 +224,13 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 onChange={handlerChangePrice}
               />
             </div>
-            <div className="d-flex justify-content-end w-100 mt-2">
+            <div className="d-flex justify-content-center w-100 mt-2">
               <button
                 type="submit"
-                className="d-flex align-items-center btn btn-sm btn-primary"
+                className="d-flex align-items-center justify-content-center btn btn-sm btn-primary w-100"
                 onClick={handlerSubmit}
               >
-                Agregar producto
+                AGREGAR PRODUCTO
                 <Bi.BiCartAdd style={{ width: 20, height: 20 }} />
               </button>
             </div>

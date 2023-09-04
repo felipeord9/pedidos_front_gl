@@ -1,16 +1,18 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import Swal from "sweetalert2";
+import { Modal } from "react-bootstrap";
 import ComboBox from "../../components/ComboBox";
 import AddProducts from "../../components/AddProducts";
 import ClientContext from "../../context/clientContext";
 import { createOrder } from "../../services/orderService";
-import { getAllClients } from "../../services/clientService";
+import { getAllClients, getAllClientsPOS } from "../../services/clientService";
 import { sendMail } from "../../services/mailService";
 import "./styles.css";
 
 function Form() {
   const { client, setClient } = useContext(ClientContext);
   const [clientes, setClientes] = useState([]);
+  const [clientsPOS, setClientsPOS] = useState([]);
   const [sucursal, setSucursal] = useState(null);
   const [files, setFiles] = useState(null);
   const [productosAgr, setProductosAgr] = useState({
@@ -24,14 +26,16 @@ function Form() {
     observations: "",
     order: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [invoiceType, setInvoiceType] = useState(false);
   const selectBranchRef = useRef();
-
   useEffect(() => {
     getAllClients().then((data) => setClientes(data));
+    getAllClientsPOS().then((data) => setClientsPOS(data));
   }, []);
 
   const findById = (id, array, setItem) => {
-    const item = array.find((elem) => elem.id === id);
+    const item = array.find((elem) => elem.nit === id);
     if (item) {
       setItem(item);
     } else {
@@ -69,6 +73,17 @@ function Form() {
     }
   };
 
+  const changeType = (e) => {
+    setSearch({
+      ...search,
+      idCliente: "",
+    });
+    setInvoiceType(!invoiceType);
+    setClient(null);
+    setSucursal(null);
+    selectBranchRef.current.selectedIndex = 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (productosAgr.agregados.length <= 0) {
@@ -91,10 +106,11 @@ function Form() {
         cancelButtonText: "Cancelar",
       }).then(({ isConfirmed }) => {
         if (isConfirmed) {
+          setLoading(true);
           const f = new FormData();
           const body = {
             client,
-            seller: sucursal.seller,
+            seller: sucursal.vendedor,
             branch: sucursal,
             products: productosAgr,
             deliveryDate: search.deliveryDate,
@@ -104,28 +120,77 @@ function Form() {
             //file: JSON.stringify(files),
           };
           files && f.append("file", files);
-          createOrder(body).then(({ data }) => {
-            Swal.fire({
-              title: "¡Creación exitosa!",
-              text: "El pedido de venta se ha realizado satisfactoriamente",
-              icon: "success",
-              confirmButtonText: "Aceptar",
-            }).then(() => {
-              window.location.reload();
+          createOrder(body)
+            .then(({ data }) => {
+              f.append(
+                "info",
+                JSON.stringify({
+                  id: idParser(data.id),
+                  ...body,
+                })
+              );
+              sendMail(f)
+                .then(() => {
+                  setLoading(false);
+                  Swal.fire({
+                    title: "¡Creación exitosa!",
+                    text: `
+                      El pedido de venta No. ${data.id} se ha realizado satisfactoriamente.
+                      Por favor revise su correo y verifique la información
+                    `,
+                    icon: "success",
+                    confirmButtonText: "Aceptar",
+                  }).then(() => {
+                    window.location.reload();
+                  });
+                })
+                .catch(() => {
+                  setLoading(false);
+                  Swal.fire({
+                    title: "¡Ha ocurrido un error!",
+                    text: `
+                  Hubo un error al momento de enviar el correo, intente de nuevo.
+                  Si el problema persiste por favor comuniquese con el área de sistemas.`,
+                    icon: "error",
+                    confirmButtonText: "Aceptar",
+                  });
+                });
+            })
+            .catch((err) => {
+              setLoading(false);
+              Swal.fire({
+                title: "¡Ha ocurrido un error!",
+                text: `
+                  Hubo un error al momento de guardar el pedido, intente de nuevo.
+                  Si el problema persiste por favor comuniquese con el área de sistemas.`,
+                icon: "error",
+                confirmButtonText: "Aceptar",
+              });
             });
-            /* sendMail({
-              id: idParser(data.id),
-              ...body,
+          /* f.append("info", JSON.stringify(body));
+          sendMail(f)
+            .then((info) => {
+              setLoading(false);
+              Swal.fire({
+                title: "¡Creación exitosa!",
+                text: "El pedido de venta se ha realizado satisfactoriamente",
+                icon: "success",
+                confirmButtonText: "Aceptar",
+              }).then(() => {
+                window.location.reload();
+              });
+            })
+            .catch(() => {
+              setLoading(false);
+              Swal.fire({
+                title: "¡Ha ocurrido un error!",
+                text: `
+                  Hubo un error al momento de enviar el correo, intente de nuevo.
+                  Si el problema persiste por favor comuniquese con el área de sistemas.`,
+                icon: "error",
+                confirmButtonText: "Aceptar",
+              });
             }); */
-            f.append(
-              "info",
-              JSON.stringify({
-                id: idParser(data.id),
-                ...body,
-              })
-            );
-            sendMail(f);
-          });
         }
       });
   };
@@ -150,11 +215,33 @@ function Form() {
       style={{ fontSize: 10.5 }}
     >
       <h1 className="text-center fs-5 fw-bold">PEDIDO DE VENTA</h1>
-      <section className="d-flex flex-row justify-content-between mb-2">
+      <section className="d-flex flex-row justify-content-between align-items-center mb-2">
         <div className="d-flex flex-column">
           <h1 className="fs-6 fw-bold m-0">EL GRAN LANGOSTINO S.A.S.</h1>
           <span className="fw-bold">Nit: 835001216</span>
           <span>Tel: 5584982 - 3155228124</span>
+        </div>
+        <div className="d-flex flex-column align-items-center">
+          <span className="text-secondary">versión 2.0.0</span>
+          <strong>Tipo de facturación</strong>
+          <div className="d-flex flex-row align-items-center gap-2">
+            <span className={!invoiceType && "text-primary"}>Estándar</span>
+            <button
+              className="position-relative d-flex align-items-center btn bg-body-secondary rounded-pill toggle-container p-0 m-0"
+              onClick={changeType}
+            >
+              <div
+                className={
+                  !invoiceType
+                    ? "d-flex align-items-center justify-content-center position-absolute bg-primary rounded-circle toggle"
+                    : "d-flex align-items-center justify-content-center position-absolute bg-warning rounded-circle toggle active"
+                }
+              ></div>
+            </button>
+            <span className={invoiceType ? "text-warning" : undefined}>
+              POS
+            </span>
+          </div>
         </div>
       </section>
       <form className="" onSubmit={handleSubmit}>
@@ -168,7 +255,7 @@ function Form() {
                   <input
                     id="idCliente"
                     type="number"
-                    value={client ? client.id : search.idCliente}
+                    value={client ? client.nit : search.idCliente}
                     className="form-control form-control-sm"
                     placeholder="Buscar por NIT/Cédula"
                     onChange={(e) => {
@@ -183,10 +270,11 @@ function Form() {
                 <div className="d-flex flex-column align-items-start">
                   <label>Razón Social:</label>
                   <ComboBox
-                    options={clientes}
+                    options={invoiceType ? clientsPOS : clientes}
                     id="razon-social"
                     item={client}
                     setItem={setClient}
+                    invoiceType={invoiceType}
                   />
                 </div>
               </div>
@@ -200,11 +288,11 @@ function Form() {
                   required
                 >
                   <option selected value="" disabled></option>
-                  {client?.branches
-                    .sort((a, b) => a.branch - b.branch)
+                  {client?.sucursales
+                    .sort((a, b) => a.id - b.id)
                     .map((elem) => (
                       <option id={elem.id} value={JSON.stringify(elem)}>
-                        {elem.branch + " - " + elem.description}
+                        {elem.id + " - " + elem.descripcion}
                       </option>
                     ))}
                 </select>
@@ -224,7 +312,11 @@ function Form() {
                     id="idVendedor"
                     type="text"
                     value={
-                      client && sucursal ? sucursal.seller.description : ""
+                      client && sucursal && !invoiceType
+                        ? sucursal.vendedor?.tercero?.razonSocial
+                        : sucursal && invoiceType
+                        ? sucursal.vendedor?.description
+                        : ""
                     }
                     className="form-control form-control-sm w-100"
                     onChange={handlerChangeSearch}
@@ -241,10 +333,12 @@ function Form() {
                 <input
                   id="order"
                   type="text"
+                  placeholder="(Campo Opcional)"
                   className="form-control form-control-sm"
                   value={search.order}
                   onChange={handlerChangeSearch}
-              />
+                  autoComplete="off"
+                />
               </div>
               <div className="w-100">
                 <label className="fw-bold">FECHA ENTREGA</label>
@@ -286,9 +380,22 @@ function Form() {
             className="form-control"
             value={search.observations}
             onChange={handlerChangeSearch}
-            style={{ maxHeight: 100, fontSize: 12 }}
+            style={{ minHeight: 70, maxHeight: 100, fontSize: 12 }}
           ></textarea>
         </div>
+        <Modal show={loading} centered>
+          <Modal.Body>
+            <div className="d-flex align-items-center">
+              <strong className="text-danger" role="status">
+                Cargando...
+              </strong>
+              <div
+                className="spinner-grow text-danger ms-auto"
+                role="status"
+              ></div>
+            </div>
+          </Modal.Body>
+        </Modal>
         <div className="d-flex flex-row gap-3">
           <button type="submit" className="btn btn-success fw-bold w-100">
             APROBAR

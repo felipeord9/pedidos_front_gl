@@ -1,8 +1,15 @@
 import { config } from '../config'
 const url = `${config.apiUrl}/clients`;
+const url2 = `${config.apiUrl2}/clients`
 
 function getAllClients() {
   return fetch(url)
+    .then(res => res.json())
+    .then(res => res.data)
+}
+
+function getAllClientsPOS() {
+  return fetch(url2)
     .then(res => res.json())
     .then(res => res.data)
 }
@@ -27,6 +34,7 @@ function createClient(body) {
 
 export {
   getAllClients,
+  getAllClientsPOS,
   getOneClient,
   createClient
 }
