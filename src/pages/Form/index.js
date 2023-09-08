@@ -6,15 +6,19 @@ import AddProducts from "../../components/AddProducts";
 import ClientContext from "../../context/clientContext";
 import { createOrder } from "../../services/orderService";
 import { getAllClients, getAllClientsPOS } from "../../services/clientService";
+import { getAllAgencies } from "../../services/agencyService"
 import { sendMail } from "../../services/mailService";
 import "./styles.css";
 
 function Form() {
   const { client, setClient } = useContext(ClientContext);
+  const [agencia, setAgencia] = useState(null)
+  const [sucursal, setSucursal] = useState(null);
   const [clientes, setClientes] = useState([]);
   const [clientsPOS, setClientsPOS] = useState([]);
-  const [sucursal, setSucursal] = useState(null);
+  const [agencias, setAgencias] = useState([])
   const [files, setFiles] = useState(null);
+  const [counter, setCounter] = useState(0)
   const [productosAgr, setProductosAgr] = useState({
     agregados: [],
     total: "0",
@@ -29,9 +33,11 @@ function Form() {
   const [loading, setLoading] = useState(false);
   const [invoiceType, setInvoiceType] = useState(false);
   const selectBranchRef = useRef();
+
   useEffect(() => {
     getAllClients().then((data) => setClientes(data));
     getAllClientsPOS().then((data) => setClientsPOS(data));
+    getAllAgencies().then((data) => setAgencias(data))
   }, []);
 
   const findById = (id, array, setItem) => {
@@ -110,6 +116,7 @@ function Form() {
           const f = new FormData();
           const body = {
             client,
+            agency: agencia,
             seller: sucursal.vendedor,
             branch: sucursal,
             products: productosAgr,
@@ -146,51 +153,51 @@ function Form() {
                 })
                 .catch(() => {
                   setLoading(false);
-                  Swal.fire({
-                    title: "¡Ha ocurrido un error!",
-                    text: `
-                  Hubo un error al momento de enviar el correo, intente de nuevo.
-                  Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                    icon: "error",
-                    confirmButtonText: "Aceptar",
-                  });
+                  setCounter(counter + 1)
+                  if(counter >= 1) {
+                    Swal.fire({
+                      title: "¡Ha ocurrido un error!",
+                      text: `
+                    Hubo un error al momento de enviar el correo, intente de nuevo.
+                    Si el problema persiste por favor comuniquese con el área de sistemas.`,
+                      icon: "error",
+                      showConfirmButton: false
+                    });
+                  } else {
+                    Swal.fire({
+                      title: "¡Ha ocurrido un error!",
+                      text: `
+                    Hubo un error al momento de enviar el correo, intente de nuevo.
+                    Si el problema persiste por favor comuniquese con el área de sistemas.`,
+                      icon: "error",
+                      confirmButtonText: "Aceptar",
+                    });
+                  }
                 });
             })
             .catch((err) => {
               setLoading(false);
-              Swal.fire({
-                title: "¡Ha ocurrido un error!",
-                text: `
+              setCounter(counter + 1)
+              if(counter >= 1) {
+                Swal.fire({
+                  title: "¡Ha ocurrido un error!",
+                  text: `
                   Hubo un error al momento de guardar el pedido, intente de nuevo.
                   Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                icon: "error",
-                confirmButtonText: "Aceptar",
-              });
-            });
-          /* f.append("info", JSON.stringify(body));
-          sendMail(f)
-            .then((info) => {
-              setLoading(false);
-              Swal.fire({
-                title: "¡Creación exitosa!",
-                text: "El pedido de venta se ha realizado satisfactoriamente",
-                icon: "success",
-                confirmButtonText: "Aceptar",
-              }).then(() => {
-                window.location.reload();
-              });
-            })
-            .catch(() => {
-              setLoading(false);
-              Swal.fire({
-                title: "¡Ha ocurrido un error!",
-                text: `
-                  Hubo un error al momento de enviar el correo, intente de nuevo.
+                  icon: "error",
+                  confirmButtonText: "Aceptar",
+                });
+              } else {
+                Swal.fire({
+                  title: "¡Ha ocurrido un error!",
+                  text: `
+                  Hubo un error al momento de guardar el pedido, intente de nuevo.
                   Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                icon: "error",
-                confirmButtonText: "Aceptar",
-              });
-            }); */
+                  icon: "error",
+                  showConfirmButton: false
+                });
+              }
+            });
         }
       });
   };
@@ -222,7 +229,7 @@ function Form() {
           <span>Tel: 5584982 - 3155228124</span>
         </div>
         <div className="d-flex flex-column align-items-center">
-          <span className="text-secondary">versión 2.0.0</span>
+          <span className="text-secondary">versión 2.1.0</span>
           <strong>Tipo de facturación</strong>
           <div className="d-flex flex-row align-items-center gap-2">
             <span className={!invoiceType && "text-primary"}>Estándar</span>
@@ -247,6 +254,24 @@ function Form() {
       <form className="" onSubmit={handleSubmit}>
         <div className="bg-light rounded shadow-sm p-3 mb-3">
           <div className="d-flex flex-column gap-1">
+            <div>
+              <label className="fw-bold">CENTRO DE OPERACIÓN</label>
+              <select
+                  ref={selectBranchRef}
+                  className="form-select form-select-sm"
+                  onChange={(e) => setAgencia(JSON.parse(e.target.value))}
+                  required
+                >
+                  <option selected value="" disabled>-- Seleccione el Centro de Operación --</option>
+                  {agencias
+                    .sort((a, b) => a.id - b.id)
+                    .map((elem) => (
+                      <option id={elem.id} value={JSON.stringify(elem)}>
+                        {elem.id + " - " + elem.descripcion}
+                      </option>
+                    ))}
+                </select>
+            </div>
             <div>
               <label className="fw-bold">CLIENTE</label>
               <div className="row row-cols-sm-2">
@@ -278,8 +303,8 @@ function Form() {
                   />
                 </div>
               </div>
-              <div>
-                <label>Sucursal</label>
+              <div className="my-1">
+                <label className="fw-bold">SUCURSAL</label>
                 <select
                   ref={selectBranchRef}
                   className="form-select form-select-sm"
@@ -287,7 +312,7 @@ function Form() {
                   disabled={client ? false : true}
                   required
                 >
-                  <option selected value="" disabled></option>
+                  <option selected value="" disabled>-- Seleccione la Sucursal --</option>
                   {client?.sucursales
                     .sort((a, b) => a.id - b.id)
                     .map((elem) => (
@@ -296,11 +321,6 @@ function Form() {
                       </option>
                     ))}
                 </select>
-                {/* <ComboBox
-                  options={client ? client.branches : []}
-                  id="sucursal"
-                  setItem={setSucursal}
-                /> */}
               </div>
             </div>
             <hr className="my-1" />
