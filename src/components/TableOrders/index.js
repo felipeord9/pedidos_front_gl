@@ -86,6 +86,13 @@ function ViewOrders({ orders }) {
       sortable: true,
       width: '175px'
     },
+    {
+      id: "notes",
+      name: "Observaciones",
+      selector: (row) => formater(row.observations),
+      sortable: true,
+      width: '550px'
+    },
   ];
 
   const formater = (number) => {
