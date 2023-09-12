@@ -1,16 +1,22 @@
 import { config } from "../config";
 const url = `${config.apiUrl2}/orders`;
 
+const findOrders = () => {
+  return fetch(url)
+    .then((data) => data.json())
+    .then((data) => data)
+}
+
 const createOrder = (body) => {
   return fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   })
     .then((res) => res.json())
-    .then((res) => res)
+    .then((res) => res);
 };
 
 const createItem = (body) => {
@@ -19,10 +25,21 @@ const createItem = (body) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   })
     .then((res) => res.json())
     .then((res) => res);
 };
 
-export { createOrder, createItem };
+const deleteOrder = (id) => {
+  return fetch(`${url}/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((res) => res);
+};
+
+export { findOrders, createOrder, createItem, deleteOrder };

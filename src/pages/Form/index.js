@@ -1,24 +1,25 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import Swal from "sweetalert2";
 import { Modal } from "react-bootstrap";
+import * as Pi from 'react-icons/pi'
 import ComboBox from "../../components/ComboBox";
 import AddProducts from "../../components/AddProducts";
+import ModalOrders from "../../components/ModalOrders";
 import ClientContext from "../../context/clientContext";
-import { createOrder } from "../../services/orderService";
+import { createOrder, deleteOrder } from "../../services/orderService";
 import { getAllClients, getAllClientsPOS } from "../../services/clientService";
-import { getAllAgencies } from "../../services/agencyService"
+import { getAllAgencies } from "../../services/agencyService";
 import { sendMail } from "../../services/mailService";
 import "./styles.css";
 
 function Form() {
   const { client, setClient } = useContext(ClientContext);
-  const [agencia, setAgencia] = useState(null)
+  const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
   const [clientes, setClientes] = useState([]);
   const [clientsPOS, setClientsPOS] = useState([]);
-  const [agencias, setAgencias] = useState([])
+  const [agencias, setAgencias] = useState([]);
   const [files, setFiles] = useState(null);
-  const [counter, setCounter] = useState(0)
   const [productosAgr, setProductosAgr] = useState({
     agregados: [],
     total: "0",
@@ -32,12 +33,13 @@ function Form() {
   });
   const [loading, setLoading] = useState(false);
   const [invoiceType, setInvoiceType] = useState(false);
+  const [showModalOrders, setShowModalOrders] = useState(false)
   const selectBranchRef = useRef();
 
   useEffect(() => {
     getAllClients().then((data) => setClientes(data));
     getAllClientsPOS().then((data) => setClientsPOS(data));
-    getAllAgencies().then((data) => setAgencias(data))
+    getAllAgencies().then((data) => setAgencias(data));
   }, []);
 
   const findById = (id, array, setItem) => {
@@ -129,10 +131,11 @@ function Form() {
           files && f.append("file", files);
           createOrder(body)
             .then(({ data }) => {
+              const idParsed = idParser(data.rowId)
               f.append(
                 "info",
                 JSON.stringify({
-                  id: idParser(data.id),
+                  id: idParsed,
                   ...body,
                 })
               );
@@ -142,8 +145,8 @@ function Form() {
                   Swal.fire({
                     title: "¡Creación exitosa!",
                     text: `
-                      El pedido de venta No. ${data.id} se ha realizado satisfactoriamente.
-                      Por favor revise su correo y verifique la información
+                      El pedido de venta No-${data.coId}-PDV-${idParser(idParsed)} se ha realizado satisfactoriamente.
+                      Por favor revise el correo y verifique la información.
                     `,
                     icon: "success",
                     confirmButtonText: "Aceptar",
@@ -151,52 +154,29 @@ function Form() {
                     window.location.reload();
                   });
                 })
-                .catch(() => {
+                .catch((err) => {
                   setLoading(false);
-                  setCounter(counter + 1)
-                  if(counter >= 1) {
-                    Swal.fire({
-                      title: "¡Ha ocurrido un error!",
-                      text: `
+                  deleteOrder(data.id)
+                  Swal.fire({
+                    title: "¡Ha ocurrido un error!",
+                    text: `
                     Hubo un error al momento de enviar el correo, intente de nuevo.
                     Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                      icon: "error",
-                      showConfirmButton: false
-                    });
-                  } else {
-                    Swal.fire({
-                      title: "¡Ha ocurrido un error!",
-                      text: `
-                    Hubo un error al momento de enviar el correo, intente de nuevo.
-                    Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                      icon: "error",
-                      confirmButtonText: "Aceptar",
-                    });
-                  }
+                    icon: "error",
+                    confirmButtonText: "Aceptar",
+                  });
                 });
             })
             .catch((err) => {
               setLoading(false);
-              setCounter(counter + 1)
-              if(counter >= 1) {
-                Swal.fire({
-                  title: "¡Ha ocurrido un error!",
-                  text: `
+              Swal.fire({
+                title: "¡Ha ocurrido un error!",
+                text: `
                   Hubo un error al momento de guardar el pedido, intente de nuevo.
                   Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                  icon: "error",
-                  confirmButtonText: "Aceptar",
-                });
-              } else {
-                Swal.fire({
-                  title: "¡Ha ocurrido un error!",
-                  text: `
-                  Hubo un error al momento de guardar el pedido, intente de nuevo.
-                  Si el problema persiste por favor comuniquese con el área de sistemas.`,
-                  icon: "error",
-                  showConfirmButton: false
-                });
-              }
+                icon: "error",
+                confirmButtonText: "Aceptar",
+              });
             });
         }
       });
@@ -221,6 +201,14 @@ function Form() {
       className="d-flex flex-column justify-content-center w-100 py-3"
       style={{ fontSize: 10.5 }}
     >
+      <ModalOrders showModal={showModalOrders} setShowModal={setShowModalOrders} />
+      <button 
+        className="d-flex align-items-center position-fixed btn btn-sm btn-primary rounded" 
+        style={{ top: 10, left: -5, width: 35, height: 30 }}
+        onClick={(e) => setShowModalOrders(!showModalOrders)}
+      >
+        <Pi.PiBooksDuotone className="w-100 h-100" />
+      </button>
       <h1 className="text-center fs-5 fw-bold">PEDIDO DE VENTA</h1>
       <section className="d-flex flex-row justify-content-between align-items-center mb-2">
         <div className="d-flex flex-column">
@@ -229,7 +217,7 @@ function Form() {
           <span>Tel: 5584982 - 3155228124</span>
         </div>
         <div className="d-flex flex-column align-items-center">
-          <span className="text-secondary">versión 2.1.0</span>
+          <span className="text-secondary">versión 2.2.0</span>
           <strong>Tipo de facturación</strong>
           <div className="d-flex flex-row align-items-center gap-2">
             <span className={!invoiceType && "text-primary"}>Estándar</span>
@@ -257,20 +245,22 @@ function Form() {
             <div>
               <label className="fw-bold">CENTRO DE OPERACIÓN</label>
               <select
-                  ref={selectBranchRef}
-                  className="form-select form-select-sm"
-                  onChange={(e) => setAgencia(JSON.parse(e.target.value))}
-                  required
-                >
-                  <option selected value="" disabled>-- Seleccione el Centro de Operación --</option>
-                  {agencias
-                    .sort((a, b) => a.id - b.id)
-                    .map((elem) => (
-                      <option id={elem.id} value={JSON.stringify(elem)}>
-                        {elem.id + " - " + elem.descripcion}
-                      </option>
-                    ))}
-                </select>
+                ref={selectBranchRef}
+                className="form-select form-select-sm"
+                onChange={(e) => setAgencia(JSON.parse(e.target.value))}
+                required
+              >
+                <option selected value="" disabled>
+                  -- Seleccione el Centro de Operación --
+                </option>
+                {agencias
+                  .sort((a, b) => a.id - b.id)
+                  .map((elem) => (
+                    <option id={elem.id} value={JSON.stringify(elem)}>
+                      {elem.id + " - " + elem.descripcion}
+                    </option>
+                  ))}
+              </select>
             </div>
             <div>
               <label className="fw-bold">CLIENTE</label>
@@ -286,7 +276,9 @@ function Form() {
                     onChange={(e) => {
                       const { value } = e.target;
                       handlerChangeSearch(e);
-                      findById(value, clientes, setClient);
+                      invoiceType 
+                      ? findById(value, clientsPOS, setClient)
+                      : findById(value, clientes, setClient)
                     }}
                     min={0}
                     required
@@ -312,7 +304,9 @@ function Form() {
                   disabled={client ? false : true}
                   required
                 >
-                  <option selected value="" disabled>-- Seleccione la Sucursal --</option>
+                  <option selected value="" disabled>
+                    -- Seleccione la Sucursal --
+                  </option>
                   {client?.sucursales
                     .sort((a, b) => a.id - b.id)
                     .map((elem) => (

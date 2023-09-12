@@ -7,7 +7,7 @@ function App() {
   return (
     <ClientContextProvider>
       <div
-        className="container d-flex justify-content-center align-items-start"
+        className="container d-flex flex-column justify-content-center align-items-start"
         style={{ minHeight: "100vh" }}
       >
         <Form />
