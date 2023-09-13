@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component'
 
-function ViewOrders({ orders }) {
+function TableOrders({ orders }) {
   const [loading, setLoading] = useState(false)
   const columns = [
     {
@@ -106,7 +106,7 @@ function ViewOrders({ orders }) {
   return (
     <div
         className="d-flex flex-column rounded"
-        style={{ height: "calc(100% - 31px)", width: '100%' }}
+        style={{ height: "calc(100% - 60px)", width: '100%' }}
       >
         <DataTable
           className="text-center border border-2 h-100"
@@ -140,4 +140,4 @@ function ViewOrders({ orders }) {
   )
 }
 
-export default ViewOrders
+export default TableOrders

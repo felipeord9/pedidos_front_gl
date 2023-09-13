@@ -7,6 +7,13 @@ const findOrders = () => {
     .then((data) => data)
 }
 
+const findFilteredOrders = (init, final) => {
+  console.log(init, final)
+  return fetch(`${url}?init=${init}&final=${final}`)
+    .then((data) => data.json())
+    .then((data) => data)
+}
+
 const createOrder = (body) => {
   return fetch(url, {
     method: "POST",
@@ -42,4 +49,4 @@ const deleteOrder = (id) => {
     .then((res) => res);
 };
 
-export { findOrders, createOrder, createItem, deleteOrder };
+export { findOrders, findFilteredOrders, createOrder, createItem, deleteOrder };
