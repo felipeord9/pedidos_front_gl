@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import DataTable from 'react-data-table-component'
 
 function TableOrders({ orders }) {
@@ -105,38 +105,38 @@ function TableOrders({ orders }) {
 
   return (
     <div
-        className="d-flex flex-column rounded"
-        style={{ height: "calc(100% - 60px)", width: '100%' }}
-      >
-        <DataTable
-          className="text-center border border-2 h-100"
-          columns={columns}
-          data={orders}
-          fixedHeaderScrollHeight={200}
-          progressPending={loading}
-          progressComponent={
-            <div class="d-flex align-items-center text-primary gap-2 mt-2">
-              <strong>Cargando...</strong>
-              <div
-                class="spinner-border spinner-border-sm ms-auto"
-                role="status"
-                aria-hidden="true"
-              ></div>
-            </div>
-          }
-          dense
-          striped
-          fixedHeader
-          pagination
-          paginationComponentOptions={{
-            rowsPerPageText: "Filas por página:",
-            rangeSeparatorText: "de",
-            selectAllRowsItem: false,
-          }}
-          paginationPerPage={10}
-          paginationRowsPerPageOptions={[10, 20, 40]}
-        />
-      </div>
+      className="d-flex flex-column rounded"
+      style={{ height: "calc(100% - 60px)", width: '100%' }}
+    >
+      <DataTable
+        className="text-center border border-2 h-100"
+        columns={columns}
+        data={orders}
+        fixedHeaderScrollHeight={200}
+        progressPending={loading}
+        progressComponent={
+          <div class="d-flex align-items-center text-primary gap-2 mt-2">
+            <strong>Cargando...</strong>
+            <div
+              class="spinner-border spinner-border-sm ms-auto"
+              role="status"
+              aria-hidden="true"
+            ></div>
+          </div>
+        }
+        dense
+        striped
+        fixedHeader
+        pagination
+        paginationComponentOptions={{
+          rowsPerPageText: "Filas por página:",
+          rangeSeparatorText: "de",
+          selectAllRowsItem: false,
+        }}
+        paginationPerPage={10}
+        paginationRowsPerPageOptions={[10, 20, 40]}
+      />
+    </div>
   )
 }
 

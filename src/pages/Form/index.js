@@ -12,7 +12,7 @@ import { getAllAgencies } from "../../services/agencyService";
 import { sendMail } from "../../services/mailService";
 import "./styles.css";
 
-function Form() {
+export default function Form() {
   const { client, setClient } = useContext(ClientContext);
   const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
@@ -198,12 +198,12 @@ function Form() {
 
   return (
     <div
-      className="d-flex flex-column justify-content-center w-100 py-3"
+      className="container d-flex flex-column w-100 py-3"
       style={{ fontSize: 10.5 }}
     >
       <ModalOrders showModal={showModalOrders} setShowModal={setShowModalOrders} />
-      <button 
-        className="d-flex align-items-center position-fixed btn btn-sm btn-primary rounded" 
+      <button
+        className="d-flex align-items-center position-fixed btn btn-sm btn-primary rounded"
         style={{ top: 10, left: -5, width: 35, height: 30 }}
         onClick={(e) => setShowModalOrders(!showModalOrders)}
       >
@@ -276,9 +276,9 @@ function Form() {
                     onChange={(e) => {
                       const { value } = e.target;
                       handlerChangeSearch(e);
-                      invoiceType 
-                      ? findById(value, clientsPOS, setClient)
-                      : findById(value, clientes, setClient)
+                      invoiceType
+                        ? findById(value, clientsPOS, setClient)
+                        : findById(value, clientes, setClient)
                     }}
                     min={0}
                     required
@@ -329,8 +329,8 @@ function Form() {
                       client && sucursal && !invoiceType
                         ? sucursal.vendedor?.tercero?.razonSocial
                         : sucursal && invoiceType
-                        ? sucursal.vendedor?.description
-                        : ""
+                          ? sucursal.vendedor?.description
+                          : ""
                     }
                     className="form-control form-control-sm w-100"
                     onChange={handlerChangeSearch}
@@ -426,5 +426,3 @@ function Form() {
     </div>
   );
 }
-
-export default Form;
