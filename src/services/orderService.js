@@ -1,14 +1,38 @@
+import axios from 'axios'
 import { config } from "../config";
 const url = `${config.apiUrl2}/orders`;
 
-const findOrders = () => {
-  return fetch(url)
-    .then((data) => data.json())
-    .then((data) => data)
+const findOrders = async () => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
+const findOrdersBySeller = async (id) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/seller/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
+const findOrdersByAgency = async (id) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/co/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
 }
 
 const findFilteredOrders = (init, final) => {
-  console.log(init, final)
   return fetch(`${url}?init=${init}&final=${final}`)
     .then((data) => data.json())
     .then((data) => data)
@@ -49,4 +73,12 @@ const deleteOrder = (id) => {
     .then((res) => res);
 };
 
-export { findOrders, findFilteredOrders, createOrder, createItem, deleteOrder };
+export { 
+  findOrders,
+  findOrdersBySeller,
+  findOrdersByAgency,
+  findFilteredOrders, 
+  createOrder, 
+  createItem, 
+  deleteOrder 
+};

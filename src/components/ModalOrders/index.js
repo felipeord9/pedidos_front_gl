@@ -47,7 +47,7 @@ function ModalOrders({ showModal, setShowModal }) {
     XLSX.writeFile(workbook, "Pedidos.xlsx");
     //navigate("/formulario");
   };
-  console.log(orders);
+
   return (
     <Modal show={showModal} fullscreen={true} style={{ fontSize: 11 }}>
       <Modal.Header>

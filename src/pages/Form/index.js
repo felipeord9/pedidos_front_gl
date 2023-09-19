@@ -198,17 +198,9 @@ export default function Form() {
 
   return (
     <div
-      className="container d-flex flex-column w-100 py-3"
+      className="container d-flex flex-column w-100 py-3 mt-5"
       style={{ fontSize: 10.5 }}
     >
-      <ModalOrders showModal={showModalOrders} setShowModal={setShowModalOrders} />
-      <button
-        className="d-flex align-items-center position-fixed btn btn-sm btn-primary rounded"
-        style={{ top: 10, left: -5, width: 35, height: 30 }}
-        onClick={(e) => setShowModalOrders(!showModalOrders)}
-      >
-        <Pi.PiBooksDuotone className="w-100 h-100" />
-      </button>
       <h1 className="text-center fs-5 fw-bold">PEDIDO DE VENTA</h1>
       <section className="d-flex flex-row justify-content-between align-items-center mb-2">
         <div className="d-flex flex-column">
@@ -217,7 +209,6 @@ export default function Form() {
           <span>Tel: 5584982 - 3155228124</span>
         </div>
         <div className="d-flex flex-column align-items-center">
-          <span className="text-secondary">versión 2.2.0</span>
           <strong>Tipo de facturación</strong>
           <div className="d-flex flex-row align-items-center gap-2">
             <span className={!invoiceType && "text-primary"}>Estándar</span>
@@ -411,12 +402,12 @@ export default function Form() {
           </Modal.Body>
         </Modal>
         <div className="d-flex flex-row gap-3">
-          <button type="submit" className="btn btn-success fw-bold w-100">
+          <button type="submit" className="btn btn-sm btn-success fw-bold w-100">
             APROBAR
           </button>
           <button
             type="button"
-            className="btn btn-danger fw-bold w-100"
+            className="btn btn-sm btn-danger fw-bold w-100"
             onClick={refreshForm}
           >
             CANCELAR

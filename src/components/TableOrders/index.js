@@ -9,18 +9,19 @@ function TableOrders({ orders }) {
       name: "No.",
       selector: (row) => row.id,
       sortable: true,
-      width: '66px'
+      width: '90px'
     },
     {
       id: "row_co_id",
-      name: "No. Ped.",
+      name: "No. Pedido",
       selector: (row) => `${row.coId}-PDV-${row.rowId}`,
-      width: '110px'
+      width: '120px'
     },
     {
       id: "co_id",
       name: "Id. C.O",
       selector: (row) => row.coId,
+      sortable: true,
       width: '83px'
     },
     {
@@ -35,7 +36,7 @@ function TableOrders({ orders }) {
       name: "Id. Cliente",
       selector: (row) => row.clientId,
       sortable: true,
-      width: '110px'
+      width: '125px'
     },
     {
       id: "client_description",
@@ -109,7 +110,7 @@ function TableOrders({ orders }) {
       style={{ height: "calc(100% - 60px)", width: '100%' }}
     >
       <DataTable
-        className="text-center border border-2 h-100"
+        className="bg-light text-center border border-2 h-100"
         columns={columns}
         data={orders}
         fixedHeaderScrollHeight={200}
@@ -133,8 +134,10 @@ function TableOrders({ orders }) {
           rangeSeparatorText: "de",
           selectAllRowsItem: false,
         }}
-        paginationPerPage={10}
-        paginationRowsPerPageOptions={[10, 20, 40]}
+        paginationPerPage={15}
+        paginationRowsPerPageOptions={[15, 25, 50]}
+        noDataComponent={
+        <div style={{padding: 24}}>Sin información</div>}
       />
     </div>
   )
