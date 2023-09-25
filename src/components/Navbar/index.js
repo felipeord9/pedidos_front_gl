@@ -24,7 +24,7 @@ export default function Navbar() {
           <div className="d-flex flex-row justify-content-between align-items-center w-100 h-100 px-4 shadow">
             <div
               id="logo-header"
-              className="d-flex flex-row align-items-center gap-3"
+              className="d-flex flex-row align-items-center gap-2"
             >
               <span className="menu-bars m-0" style={{ cursor: "pointer" }}>
                 <FaIcons.FaBars
@@ -35,6 +35,7 @@ export default function Navbar() {
               <img
                 src={Logo}
                 width={100}
+                className="navbar-img"
                 onClick={(e) => navigate("/inicio")}
                 alt=""
                 style={{ cursor: "pointer" }}
@@ -46,7 +47,7 @@ export default function Navbar() {
                 className="d-flex align-items-center position-relative bg-danger rounded-pill p-2 pe-4"
                 style={{ right: "-20px", height: 25 }}
               >
-                <span className="text-light">{user.name}</span>
+                <span className="text-light text-nowrap m-0">{user.name}</span>
               </div>
               <div
                 id="btn-session"
@@ -60,12 +61,7 @@ export default function Navbar() {
                   aria-expanded="false"
                   data-bs-offset="0,10"
                 >
-                  <img
-                    src="https://images.pexels.com/photos/7515080/pexels-photo-7515080.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    className="w-100 h-100"
-                    alt=""
-                  />
-                  {/* <FaIcons.FaUser className="w-100" /> */}
+                  <FaIcons.FaUser className="w-100" />
                 </button>
                 <ul
                   className="dropdown-menu text-center p-0 rounded-3"

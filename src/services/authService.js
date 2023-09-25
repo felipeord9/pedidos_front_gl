@@ -15,7 +15,12 @@ export const userLogin = async (credentials) => {
 
 export const changePassword = async (credentials) => {
   try {
-    const { data } = await axios.post(`${url}/auth/change/password`, credentials)
+    const token = JSON.parse(localStorage.getItem("token"))
+    const { data } = await axios.post(`${url}/auth/change/password`, credentials, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
 
     return data
   } catch (error) {

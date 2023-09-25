@@ -88,6 +88,13 @@ function TableOrders({ orders }) {
       width: '175px'
     },
     {
+      id: "created_by",
+      name: "Creado por",
+      selector: (row) => row?.user?.name,
+      sortable: true,
+      width: '220px'
+    },
+    {
       id: "notes",
       name: "Observaciones",
       selector: (row) => formater(row.observations),
@@ -95,6 +102,8 @@ function TableOrders({ orders }) {
       width: '550px'
     },
   ];
+
+  console.log(orders)
 
   const formater = (number) => {
     const exp = /(\d)(?=(\d{3})+(?!\d))/g;
@@ -106,11 +115,11 @@ function TableOrders({ orders }) {
 
   return (
     <div
-      className="d-flex flex-column rounded"
+      className="d-flex flex-column rounded m-0 p-0"
       style={{ height: "calc(100% - 60px)", width: '100%' }}
     >
       <DataTable
-        className="bg-light text-center border border-2 h-100"
+        className="bg-light text-center border border-2 h-100 p-0 m-0"
         columns={columns}
         data={orders}
         fixedHeaderScrollHeight={200}
@@ -135,9 +144,8 @@ function TableOrders({ orders }) {
           selectAllRowsItem: false,
         }}
         paginationPerPage={15}
-        paginationRowsPerPageOptions={[15, 25, 50]}
-        noDataComponent={
-        <div style={{padding: 24}}>Sin información</div>}
+        paginationRowsPerPageOptions={[10, 25, 50]}
+        noDataComponent={ <div style={{padding: 24}}>Ningún resultado encontrado.</div> }
       />
     </div>
   )

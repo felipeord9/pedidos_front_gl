@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import InputPassword from '../../components/InputPassword';
+import useUser from '../../hooks/useUser';
 import { changeRecoveryPassword } from '../../services/authService';
 import Logo from '../../assets/logo-el-gran-langostino.png'
 import './styles.css'
 
 export default function RecoveryPassword() {
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmNewPassword, setConfirmNewPassword] = useState('')
-  const [errorInput, setErrorInput] = useState('')
-  const { token } = useParams()
-  const navigate = useNavigate()
+    const { isLogged } = useUser()
+    const [newPassword, setNewPassword] = useState('')
+    const [confirmNewPassword, setConfirmNewPassword] = useState('')
+    const [errorInput, setErrorInput] = useState('')
+    const { token } = useParams()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+      if (isLogged) navigate('/inicio');
+    }, [isLogged, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -20,12 +27,18 @@ export default function RecoveryPassword() {
     }
     changeRecoveryPassword({token, newPassword})
       .then((data) => {
-        console.log(data)
+        Swal.fire({
+          title: "¡CORECTO!",
+          text: "La contraseña se ha cambiado exitosamente.",
+          icon: 'success',
+          confirmButtonText: "Aceptar",
+          timer: 3000
+        })
+        navigate('/login')
       })
       .catch((error) => {
         setErrorInput('El token ha expirado, será redirigido al login')
-        console.log(error)
-       /*  return setTimeout(() => navigate('/login'), 4000) */
+        return setTimeout(() => navigate('/login'), 4000)
       })
   }
 

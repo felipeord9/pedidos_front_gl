@@ -1,9 +1,8 @@
-import Swal from 'sweetalert2';
 import * as FiIcons from 'react-icons/fi';
 import DataTable from 'react-data-table-component'
 import useAlert from '../../hooks/useAlert';
 
-export default function TableUsers({ users, loading }) {
+export default function TableUsers({ users, loading, setSelectedUser, setShowModal }) {
   const { successAlert } = useAlert()
   const columns = [
     {
@@ -40,7 +39,10 @@ export default function TableUsers({ users, loading }) {
       center: true,
       cell: (row, index, column, id) => (
         <div className='d-flex gap-2 p-1'>
-          <button className='btn btn-sm btn-primary'>
+          <button className='btn btn-sm btn-primary' onClick={(e) => {
+            setSelectedUser(row)
+            setShowModal(true)
+          }}>
             <FiIcons.FiEdit />
           </button>
         </div>
@@ -82,7 +84,7 @@ export default function TableUsers({ users, loading }) {
         paginationPerPage={15}
         paginationRowsPerPageOptions={[15, 25, 50]}
         noDataComponent={
-        <div style={{padding: 24}}>Sin información</div>}
+        <div style={{padding: 24}}>Ningún resultado encontrado.</div>}
       />
     </div>
   )

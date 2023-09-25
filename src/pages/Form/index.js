@@ -1,10 +1,9 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import Swal from "sweetalert2";
 import { Modal } from "react-bootstrap";
-import * as Pi from 'react-icons/pi'
 import ComboBox from "../../components/ComboBox";
 import AddProducts from "../../components/AddProducts";
-import ModalOrders from "../../components/ModalOrders";
+import AuthContext from "../../context/authContext";
 import ClientContext from "../../context/clientContext";
 import { createOrder, deleteOrder } from "../../services/orderService";
 import { getAllClients, getAllClientsPOS } from "../../services/clientService";
@@ -13,6 +12,7 @@ import { sendMail } from "../../services/mailService";
 import "./styles.css";
 
 export default function Form() {
+  const { user, setUser } = useContext(AuthContext)
   const { client, setClient } = useContext(ClientContext);
   const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
@@ -33,7 +33,6 @@ export default function Form() {
   });
   const [loading, setLoading] = useState(false);
   const [invoiceType, setInvoiceType] = useState(false);
-  const [showModalOrders, setShowModalOrders] = useState(false)
   const selectBranchRef = useRef();
 
   useEffect(() => {
@@ -124,6 +123,7 @@ export default function Form() {
             products: productosAgr,
             deliveryDate: search.deliveryDate,
             createdAt: new Date(),
+            createdBy: user.id,
             observations: search.observations,
             purchaseOrder: search.order,
             //file: JSON.stringify(files),
@@ -220,11 +220,11 @@ export default function Form() {
                 className={
                   !invoiceType
                     ? "d-flex align-items-center justify-content-center position-absolute bg-primary rounded-circle toggle"
-                    : "d-flex align-items-center justify-content-center position-absolute bg-warning rounded-circle toggle active"
+                    : "d-flex align-items-center justify-content-center position-absolute bg-success   rounded-circle toggle active"
                 }
               ></div>
             </button>
-            <span className={invoiceType ? "text-warning" : undefined}>
+            <span className={invoiceType ? "text-success" : undefined}>
               POS
             </span>
           </div>
@@ -401,7 +401,7 @@ export default function Form() {
             </div>
           </Modal.Body>
         </Modal>
-        <div className="d-flex flex-row gap-3">
+        <div className="d-flex flex-row gap-3 mb-3">
           <button type="submit" className="btn btn-sm btn-success fw-bold w-100">
             APROBAR
           </button>

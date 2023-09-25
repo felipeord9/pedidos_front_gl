@@ -20,7 +20,7 @@ function App() {
       <ClientContextProvider>
         <Router>
           <Navbar />
-          <div id='wrapper' className="d-flex vh-100 overflow-scroll">
+          <div id='wrapper' className="d-flex vh-100 overflow-auto p-0">
             <Routes>
               <Route path='/' element={<Navigate to="/login" />} />
               <Route path='login' element={<Login />} />

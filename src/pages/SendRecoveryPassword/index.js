@@ -1,21 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import useUser from '../../hooks/useUser';
 import { sendRecovery } from '../../services/authService';
 import Logo from '../../assets/logo-el-gran-langostino.png'
 import './styles.css'
 
 export default function SendRecoveryPassword() {
+  const { isLogged } = useUser()
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isLogged) navigate('/inicio');
+  }, [isLogged, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault()
     sendRecovery(email)
       .then((data) => {
         Swal.fire({
-          title: "CORECTO!",
+          title: "¡CORECTO!",
           text: "El correo de recuperación fue enviado de manera exitosa",
           icon: 'success',
           confirmButtonText: "Aceptar"
@@ -30,7 +36,7 @@ export default function SendRecoveryPassword() {
 
   return (
     <div className='d-flex justify-content-center align-items-center h-100 w-100 m-auto'>
-      <div className='card p-5 border border-4 shadow rounded-4 m-auto' style={{ maxWidth: 400}}>
+      <div className='card p-5 border border-4 shadow rounded-4 m-auto' style={{ maxWidth: 370}}>
         <div className='mb-3 p-2'>
           <img src={Logo} className='w-100' alt='logo' />
         </div>

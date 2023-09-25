@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as GoIcons from "react-icons/go"
 import TableUsers from "../../components/TableUsers"
+import ModalUsers from "../../components/ModalUsers";
 import { findUsers } from "../../services/userService"
 
 export default function Orders() {
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [suggestions, setSuggestions] = useState([])
   const [search, setSearch] = useState('')
+  const [showModalUsers, setShowModalUsers] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -54,8 +57,15 @@ export default function Orders() {
 
   return (
     <div className="d-flex flex-column container mt-5">
-      <div className="d-flex flex-column gap-2 mt-2 h-100">
-        <div className="d-flex justify-content-end gap-3">
+      <ModalUsers 
+        user={selectedUser}
+        setUser={setSelectedUser}
+        showModal={showModalUsers} 
+        setShowModal={setShowModalUsers} 
+        reloadInfo={getAllUsers} 
+      />
+      <div className="d-flex flex-column gap-2 h-100">
+        <div className="d-flex justify-content-end mt-2 gap-3">
           <input
             type="search"
             value={search}
@@ -65,12 +75,12 @@ export default function Orders() {
           />
           <button 
             className="d-flex align-items-center text-nowrap btn btn-sm btn-danger text-light gap-1" 
-            onClick={(e) => alert('Esta acción no está disponible aún')}>
+            onClick={(e) => setShowModalUsers(!showModalUsers)}>
               Nuevo usuario
               <GoIcons.GoPersonAdd style={{width: 15, height: 15}} />
           </button>
         </div>
-        <TableUsers users={suggestions} loading={loading}/>
+        <TableUsers users={suggestions} setShowModal={setShowModalUsers} setSelectedUser={setSelectedUser} loading={loading}/>
       </div>
     </div>
   )

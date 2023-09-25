@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import * as HiIcons from "react-icons/hi";
 import * as FaIcons from "react-icons/fa";
@@ -21,6 +21,7 @@ export default function Orders() {
   });
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const refTable = useRef()
 
   useEffect(() => {
     getAllOrders();
@@ -84,7 +85,7 @@ export default function Orders() {
   const findOrder = (e) => {
     e.preventDefault()
     if (search.length > 0) {
-      const [co, pdv, id] = search.split("-");
+      const [co, id] = search.split("-");
       const order = orders.find(
         (elem) => elem.coId === co && elem.rowId === id
       );
@@ -97,11 +98,32 @@ export default function Orders() {
       getAllOrders();
     }
   };
+
+  const flattenObject = (obj, prefix = '') => {
+    return Object.keys(obj).reduce((acc, key) => {
+      const pre = prefix.length ? prefix + '.' : '';
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        Object.assign(acc, flattenObject(obj[key], pre + key));
+      } else {
+        acc[pre + key] = obj[key];
+      }
+
+      delete acc.userId
+      delete acc["user.id"]
+      delete acc["user.email"]
+      delete acc["user.password"]
+      delete acc["user.recoveryToken"]
+      delete acc["user.createdAt"]
+
+      return acc;
+    }, {});
+  }
+
   const handleDownload = () => {
     const date = new Date();
     const workbook = XLSX.utils.book_new();
-    //const newData = orders.map(value => flattenObject(value))
-    const worksheet = XLSX.utils.json_to_sheet(suggestions);
+    const newData = orders.map(value => flattenObject(value))
+    const worksheet = XLSX.utils.json_to_sheet(newData);
     XLSX.utils.book_append_sheet(
       workbook,
       worksheet,
@@ -113,14 +135,14 @@ export default function Orders() {
 
   return (
     <div className="d-flex flex-column container mt-5">
-      <div className="d-flex flex-column gap-2 mt-2 h-100">
-        <div className="d-flex justify-content-center gap-2">
+      <div className="d-flex flex-column h-100 gap-2">
+        <div className="d-flex justify-content-center mt-2 gap-2">
           <form className="position-relative d-flex justify-content-center w-100" onSubmit={findOrder}>
             <input
               type="search"
               value={search}
               className="form-control form-control-sm pe-4"
-              placeholder="Buscar pedido (Ej: 005-PDV-1)"
+              placeholder="Buscar pedido (Ej: 005-1)"
               onChange={(e) => setSearch(e.target.value.toUpperCase())}
             />
             <button
@@ -191,7 +213,7 @@ export default function Orders() {
             <HiIcons.HiDocumentAdd style={{ width: 15, height: 15 }} />
           </button>
         </div>
-        <TableOrders orders={suggestions} />
+        <TableOrders ref={refTable} orders={suggestions} />
       </div>
     </div>
   );

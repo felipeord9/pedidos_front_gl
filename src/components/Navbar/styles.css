@@ -121,3 +121,8 @@ small {
   font-size: 0.8rem;
   color: #f3e2c2;
 }
+@media (max-width: 450px) {
+  .navbar-img {
+    display: none;
+  }
+}

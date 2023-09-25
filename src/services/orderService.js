@@ -39,10 +39,13 @@ const findFilteredOrders = (init, final) => {
 }
 
 const createOrder = (body) => {
+  const token = JSON.parse(localStorage.getItem("token"))
   return fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+      
     },
     body: JSON.stringify(body),
   })
@@ -51,10 +54,12 @@ const createOrder = (body) => {
 };
 
 const createItem = (body) => {
+  const token = JSON.parse(localStorage.getItem("token"))
   return fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify(body),
   })
