@@ -118,7 +118,7 @@ export default function Navbar() {
               onClick={(e) => setShowSidebar(!showSideBar)}
             >
               <li className="text-center text-secondary">
-                <span className="m-0">Gran Langostino S.A.S - v2.5.0</span>
+                <span className="m-0">Gran Langostino S.A.S - v2.6.0</span>
               </li>
             </ul>
           </nav>

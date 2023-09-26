@@ -100,6 +100,7 @@ export default function Orders() {
   };
 
   const flattenObject = (obj, prefix = '') => {
+    delete obj.items
     return Object.keys(obj).reduce((acc, key) => {
       const pre = prefix.length ? prefix + '.' : '';
       if (typeof obj[key] === 'object' && obj[key] !== null) {
@@ -123,6 +124,7 @@ export default function Orders() {
     const date = new Date();
     const workbook = XLSX.utils.book_new();
     const newData = orders.map(value => flattenObject(value))
+    console.log(orders)
     const worksheet = XLSX.utils.json_to_sheet(newData);
     XLSX.utils.book_append_sheet(
       workbook,
@@ -155,6 +157,7 @@ export default function Orders() {
           </form>
           <div class="btn-group">
             <button
+              title="Filtro por fecha"
               type="button"
               class="d-flex align-items-center btn btn-sm btn-primary"
               onClick={getFilteredOrders}
@@ -200,12 +203,14 @@ export default function Orders() {
             </ul>
           </div>
           <button
+            title="Descargar Excel"
             className="btn btn-sm btn-success"
             onClick={(e) => handleDownload()}
           >
             <FaIcons.FaDownload />
           </button>
           <button
+            title="Nuevo pedido"
             className="d-flex align-items-center text-nowrap btn btn-sm btn-danger text-light gap-1 h-100"
             onClick={(e) => navigate("/pedido")}
           >

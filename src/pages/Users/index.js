@@ -73,7 +73,8 @@ export default function Orders() {
             placeholder="Buscar usuario"
             onChange={searchUsers}
           />
-          <button 
+          <button
+            title="Nuevo usuario"
             className="d-flex align-items-center text-nowrap btn btn-sm btn-danger text-light gap-1" 
             onClick={(e) => setShowModalUsers(!showModalUsers)}>
               Nuevo usuario

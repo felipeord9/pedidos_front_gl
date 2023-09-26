@@ -39,7 +39,7 @@ export default function TableUsers({ users, loading, setSelectedUser, setShowMod
       center: true,
       cell: (row, index, column, id) => (
         <div className='d-flex gap-2 p-1'>
-          <button className='btn btn-sm btn-primary' onClick={(e) => {
+          <button title="Editar usuario" className='btn btn-sm btn-primary' onClick={(e) => {
             setSelectedUser(row)
             setShowModal(true)
           }}>
