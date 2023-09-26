@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { PDFViewer } from "@react-pdf/renderer";
+import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import * as FaIcons from "react-icons/fa";
 import { Modal } from "react-bootstrap";
 import DocOrderPDF from "../DocOrderPDF";
 
 function TableOrders({ orders, loading }) {
+  const [isMobile, setIsMobile] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const columns = [
     {
@@ -13,25 +14,42 @@ function TableOrders({ orders, loading }) {
       name: "No.",
       selector: (row) => row.id,
       sortable: true,
-      width: '60px'
+      width: "60px",
     },
     {
       id: "options",
       name: "",
       center: true,
-      cell: (row, index, column, id) => (
-        <div className="d-flex gap-2 p-1">
-          <button
-            title="Ver PDF de pedido"
-            className="btn btn-sm btn-primary"
-            onClick={(e) => {
-              setSelectedOrder(row);
-            }}
-          >
-            <FaIcons.FaEye />
-          </button>
-        </div>
-      ),
+      cell: (row, index, column, id) =>
+        isMobile ? (
+          <div className="d-flex gap-2 p-1">
+            <PDFDownloadLink
+              className=""
+              document={<DocOrderPDF order={row} />}
+              fileName={`${row?.coId}-PDV-${row?.rowId}.pdf`}
+            >
+              {({ blob, url, loading, error }) =>
+                loading ? (
+                  "Loading document..."
+                ) : (
+                  <FaIcons.FaDownload />
+                )
+              }
+            </PDFDownloadLink>
+          </div>
+        ) : (
+          <div className="d-flex gap-2 p-1">
+            <button
+              title="Ver PDF de pedido"
+              className="btn btn-sm btn-primary"
+              onClick={(e) => {
+                setSelectedOrder(row);
+              }}
+            >
+              <FaIcons.FaEye />
+            </button>
+          </div>
+        ),
       width: "50px",
     },
     {
@@ -126,6 +144,22 @@ function TableOrders({ orders, loading }) {
     },
   ];
 
+  useEffect(() => {
+
+  }, [selectedOrder])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 600px)");
+    setIsMobile(mediaQuery.matches)
+    mediaQuery.addEventListener("change", () =>
+      setIsMobile(mediaQuery.matches)
+    );
+    return () =>
+      mediaQuery.removeEventListener("change", () =>
+        setIsMobile(mediaQuery.matches)
+      );
+  }, []);
+
   const formater = (number) => {
     const exp = /(\d)(?=(\d{3})+(?!\d))/g;
     const rep = "$1.";
@@ -172,11 +206,11 @@ function TableOrders({ orders, loading }) {
       />
       <Modal
         size="lg"
-        show={Boolean(selectedOrder)}
+        show={Boolean(selectedOrder && !isMobile)}
         onHide={() => setSelectedOrder(null)}
       >
         <PDFViewer
-        className="rounded"
+          className="rounded"
           style={{
             width: "100%",
             height: "90vh",
