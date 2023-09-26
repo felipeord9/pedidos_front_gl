@@ -20,6 +20,7 @@ export default function Orders() {
     finalDate: null,
   });
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const refTable = useRef();
 
@@ -28,21 +29,25 @@ export default function Orders() {
   }, []);
 
   const getAllOrders = () => {
+    setLoading(true)
     findOrders()
       .then(({ data }) => {
         setOrders(data);
         setSuggestions(data);
+        setLoading(false)
       })
       .catch(() => {
         findOrdersBySeller(user.rowId)
           .then(({ data }) => {
             setOrders(data);
             setSuggestions(data);
+            setLoading(false)
           })
           .catch(() => {
             findOrdersByAgency(user.rowId).then(({ data }) => {
               setOrders(data);
               setSuggestions(data);
+              setLoading(false)
             });
           });
       });
@@ -50,13 +55,10 @@ export default function Orders() {
 
   const getFilteredOrders = () => {
     if (filterDate.initialDate && filterDate.finalDate) {
-      console.log(filterDate);
       const initialDate = new Date(filterDate.initialDate.split('-').join('/')).toLocaleDateString();
       const finalDate = new Date(filterDate.finalDate.split('-').join('/')).toLocaleDateString();
-      console.log(initialDate, finalDate)
       const filteredOrders = orders.filter((elem) => {
         const splitDate = new Date(elem.createdAt).toLocaleDateString();
-        console.log(splitDate);
         if (splitDate >= initialDate && splitDate <= finalDate) {
           return elem;
         }
@@ -222,7 +224,7 @@ export default function Orders() {
             <HiIcons.HiDocumentAdd style={{ width: 15, height: 15 }} />
           </button>
         </div>
-        <TableOrders ref={refTable} orders={suggestions} />
+        <TableOrders ref={refTable} orders={suggestions} loading={loading} />
       </div>
     </div>
   );

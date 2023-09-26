@@ -5,17 +5,16 @@ import * as FaIcons from "react-icons/fa";
 import { Modal } from "react-bootstrap";
 import DocOrderPDF from "../DocOrderPDF";
 
-function TableOrders({ orders }) {
+function TableOrders({ orders, loading }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [loading, setLoading] = useState(false);
   const columns = [
-    /* {
+    {
       id: "no",
       name: "No.",
       selector: (row) => row.id,
       sortable: true,
-      width: '90px'
-    }, */
+      width: '60px'
+    },
     {
       id: "options",
       name: "",
@@ -39,7 +38,7 @@ function TableOrders({ orders }) {
       id: "row_co_id",
       name: "No. Pedido",
       selector: (row) => `${row.coId}-PDV-${row.rowId}`,
-      width: "120px",
+      width: "125px",
     },
     {
       id: "co_id",
@@ -147,7 +146,7 @@ function TableOrders({ orders }) {
         fixedHeaderScrollHeight={200}
         progressPending={loading}
         progressComponent={
-          <div class="d-flex align-items-center text-primary gap-2 mt-2">
+          <div class="d-flex align-items-center text-danger gap-2 mt-2">
             <strong>Cargando...</strong>
             <div
               class="spinner-border spinner-border-sm ms-auto"

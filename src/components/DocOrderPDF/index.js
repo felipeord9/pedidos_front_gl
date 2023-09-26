@@ -127,7 +127,7 @@ export default function DocOrderPDF({ order }) {
                         padding: 5,
                       }}
                     >
-                      No.{order?.coId}-PDV-{idParser(order?.id)}
+                      No.{order?.coId}-PDV-{idParser(order?.rowId)}
                     </Text>
                     <Text style={{ ...styles.tableRow, padding: 3 }}>
                       <Text style={{ fontFamily: "Helvetica-Bold" }}>
