@@ -21,7 +21,7 @@ export default function Orders() {
   });
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
-  const refTable = useRef()
+  const refTable = useRef();
 
   useEffect(() => {
     getAllOrders();
@@ -50,13 +50,14 @@ export default function Orders() {
 
   const getFilteredOrders = () => {
     if (filterDate.initialDate && filterDate.finalDate) {
+      console.log(filterDate);
+      const initialDate = new Date(filterDate.initialDate.split('-').join('/')).toLocaleDateString();
+      const finalDate = new Date(filterDate.finalDate.split('-').join('/')).toLocaleDateString();
+      console.log(initialDate, finalDate)
       const filteredOrders = orders.filter((elem) => {
-        const splitDate = elem.createdAt.split("T")[0];
+        const splitDate = new Date(elem.createdAt).toLocaleDateString();
         console.log(splitDate);
-        if (
-          splitDate >= filterDate.initialDate &&
-          splitDate <= filterDate.finalDate
-        ) {
+        if (splitDate >= initialDate && splitDate <= finalDate) {
           return elem;
         }
         return 0;
@@ -83,7 +84,7 @@ export default function Orders() {
   };
 
   const findOrder = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (search.length > 0) {
       const [co, id] = search.split("-");
       const order = orders.find(
@@ -99,32 +100,32 @@ export default function Orders() {
     }
   };
 
-  const flattenObject = (obj, prefix = '') => {
-    delete obj.items
+  const flattenObject = (obj, prefix = "") => {
+    delete obj.items;
     return Object.keys(obj).reduce((acc, key) => {
-      const pre = prefix.length ? prefix + '.' : '';
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
+      const pre = prefix.length ? prefix + "." : "";
+      if (typeof obj[key] === "object" && obj[key] !== null) {
         Object.assign(acc, flattenObject(obj[key], pre + key));
       } else {
         acc[pre + key] = obj[key];
       }
 
-      delete acc.userId
-      delete acc["user.id"]
-      delete acc["user.email"]
-      delete acc["user.password"]
-      delete acc["user.recoveryToken"]
-      delete acc["user.createdAt"]
+      delete acc.userId;
+      delete acc["user.id"];
+      delete acc["user.email"];
+      delete acc["user.password"];
+      delete acc["user.recoveryToken"];
+      delete acc["user.createdAt"];
 
       return acc;
     }, {});
-  }
+  };
 
   const handleDownload = () => {
     const date = new Date();
     const workbook = XLSX.utils.book_new();
-    const newData = orders.map(value => flattenObject(value))
-    console.log(orders)
+    const newData = orders.map((value) => flattenObject(value));
+    console.log(orders);
     const worksheet = XLSX.utils.json_to_sheet(newData);
     XLSX.utils.book_append_sheet(
       workbook,
@@ -139,7 +140,10 @@ export default function Orders() {
     <div className="d-flex flex-column container mt-5">
       <div className="d-flex flex-column h-100 gap-2">
         <div className="d-flex justify-content-center mt-2 gap-2">
-          <form className="position-relative d-flex justify-content-center w-100" onSubmit={findOrder}>
+          <form
+            className="position-relative d-flex justify-content-center w-100"
+            onSubmit={findOrder}
+          >
             <input
               type="search"
               value={search}
@@ -150,7 +154,7 @@ export default function Orders() {
             <button
               type="submit"
               className="position-absolute btn btn-sm"
-              style={{right:0}} 
+              style={{ right: 0 }}
             >
               <FaIcons.FaSearch />
             </button>
