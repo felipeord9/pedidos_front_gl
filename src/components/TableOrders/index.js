@@ -24,14 +24,11 @@ function TableOrders({ orders, loading }) {
         isMobile ? (
           <div className="d-flex gap-2 p-1">
             <PDFDownloadLink
-              className=""
               document={<DocOrderPDF order={row} />}
               fileName={`${row?.coId}-PDV-${row?.rowId}.pdf`}
             >
               {({ blob, url, loading, error }) =>
-                loading ? (
-                  "Loading document..."
-                ) : (
+                !loading && (
                   <FaIcons.FaDownload />
                 )
               }
