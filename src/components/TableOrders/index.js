@@ -10,6 +10,7 @@ import { updateOrder } from "../../services/orderService";
 import "./styles.css";
 
 const styleStatus = {
+  "pedido nuevo": "dark",
   alistamiento: "secondary",
   "verificando pago": "primary",
   "en ruta": "warning",
@@ -78,6 +79,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
           disabled={user.role === "vendedor"}
           onChange={(e) => updateState(e, row)}
         >
+          <option className="text-secondary">pedido nuevo</option>
           <option className="text-secondary">alistamiento</option>
           <option className="text-primary">verificando pago</option>
           <option className="text-warning">en ruta</option>
