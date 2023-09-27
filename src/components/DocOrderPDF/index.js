@@ -225,7 +225,7 @@ export default function DocOrderPDF({ order }) {
                       <Text style={{ fontFamily: "Helvetica-Bold" }}>
                         Fecha Entrega:{" "}
                       </Text>
-                      {order?.deliveryDate}
+                      {new Date(order?.deliveryDate).toLocaleString("es-CO")}
                     </Text>
                     <Text style={{ paddingBottom: 5 }}>
                       <Text style={{ fontFamily: "Helvetica-Bold" }}>

@@ -12,7 +12,7 @@ import { sendMail } from "../../services/mailService";
 import "./styles.css";
 
 export default function Form() {
-  const { user, setUser } = useContext(AuthContext)
+  const { user, setUser } = useContext(AuthContext);
   const { client, setClient } = useContext(ClientContext);
   const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
@@ -54,6 +54,7 @@ export default function Form() {
 
   const handlerChangeSearch = (e) => {
     const { id, value } = e.target;
+    console.log(value);
     setSearch({
       ...search,
       [id]: value,
@@ -131,7 +132,7 @@ export default function Form() {
           files && f.append("file", files);
           createOrder(body)
             .then(({ data }) => {
-              const idParsed = idParser(data.rowId)
+              const idParsed = idParser(data.rowId);
               f.append(
                 "info",
                 JSON.stringify({
@@ -145,7 +146,9 @@ export default function Form() {
                   Swal.fire({
                     title: "¡Creación exitosa!",
                     text: `
-                      El pedido de venta No-${data.coId}-PDV-${idParser(idParsed)} se ha realizado satisfactoriamente.
+                      El pedido de venta No-${data.coId}-PDV-${idParser(
+                      idParsed
+                    )} se ha realizado satisfactoriamente.
                       Por favor revise el correo y verifique la información.
                     `,
                     icon: "success",
@@ -156,7 +159,7 @@ export default function Form() {
                 })
                 .catch((err) => {
                   setLoading(false);
-                  deleteOrder(data.id)
+                  deleteOrder(data.id);
                   Swal.fire({
                     title: "¡Ha ocurrido un error!",
                     text: `
@@ -269,7 +272,7 @@ export default function Form() {
                       handlerChangeSearch(e);
                       invoiceType
                         ? findById(value, clientsPOS, setClient)
-                        : findById(value, clientes, setClient)
+                        : findById(value, clientes, setClient);
                     }}
                     min={0}
                     required
@@ -320,8 +323,8 @@ export default function Form() {
                       client && sucursal && !invoiceType
                         ? sucursal.vendedor?.tercero?.razonSocial
                         : sucursal && invoiceType
-                          ? sucursal.vendedor?.description
-                          : ""
+                        ? sucursal.vendedor?.description
+                        : ""
                     }
                     className="form-control form-control-sm w-100"
                     onChange={handlerChangeSearch}
@@ -349,15 +352,17 @@ export default function Form() {
                 <label className="fw-bold">FECHA ENTREGA</label>
                 <input
                   id="deliveryDate"
-                  type="date"
+                  type="datetime-local"
                   className="form-control form-control-sm"
+                  min={new Date().toISOString().split(':').slice(0, 2).join(':')}
                   value={search.deliveryDate}
                   onChange={handlerChangeSearch}
-                  min={new Date().toLocaleDateString("en-CA")}
+                  
                   required
                 />
               </div>
             </div>
+            {console.log(new Date().toISOString().split(':').slice(0, 2).join(':'))}
             <div className="w-100">
               <label className="fw-bold">ARCHIVOS ADJUNTOS</label>
               <div className="row">
@@ -402,7 +407,10 @@ export default function Form() {
           </Modal.Body>
         </Modal>
         <div className="d-flex flex-row gap-3 mb-3">
-          <button type="submit" className="btn btn-sm btn-success fw-bold w-100">
+          <button
+            type="submit"
+            className="btn btn-sm btn-success fw-bold w-100"
+          >
             APROBAR
           </button>
           <button

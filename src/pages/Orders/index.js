@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import * as HiIcons from "react-icons/hi";
 import * as FaIcons from "react-icons/fa";
+import * as VscIcons from "react-icons/vsc";
 import * as XLSX from "xlsx";
 import TableOrders from "../../components/TableOrders";
 import AuthContext from "../../context/authContext";
@@ -89,13 +90,13 @@ export default function Orders() {
     e.preventDefault();
     if (search.length > 0) {
       const [co, id] = search.split("-");
-      const order = orders.find(
-        (elem) => elem.coId === co && elem.rowId === id
-      );
-      if (!order) {
-        getAllOrders();
+      let filterOrders;
+      if(co && id) {
+        filterOrders = orders.find((elem) => elem.coId === co && elem.rowId === id)
+        setSuggestions([filterOrders])
       } else {
-        setSuggestions([order]);
+        filterOrders = orders.filter((elem) => elem.state.includes(search.toLowerCase()))
+        setSuggestions(filterOrders)
       }
     } else {
       getAllOrders();
@@ -149,16 +150,17 @@ export default function Orders() {
             <input
               type="search"
               value={search}
-              className="form-control form-control-sm pe-4"
+              className="form-control form-control-sm"
+              style={{paddingRight: 35}}
               placeholder="Buscar pedido (Ej: 005-1)"
-              onChange={(e) => setSearch(e.target.value.toUpperCase())}
+              onChange={(e) => setSearch(e.target.value)}
             />
             <button
               type="submit"
               className="position-absolute btn btn-sm"
               style={{ right: 0 }}
             >
-              <FaIcons.FaSearch />
+                {search.length ? <FaIcons.FaSearch /> : <VscIcons.VscDebugRestart />}
             </button>
           </form>
           <div class="btn-group">
@@ -224,7 +226,7 @@ export default function Orders() {
             <HiIcons.HiDocumentAdd style={{ width: 15, height: 15 }} />
           </button>
         </div>
-        <TableOrders ref={refTable} orders={suggestions} loading={loading} />
+        <TableOrders ref={refTable} orders={suggestions} getAllOrders={getAllOrders} loading={loading} />
       </div>
     </div>
   );

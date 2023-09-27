@@ -53,6 +53,16 @@ const createOrder = (body) => {
     .then((res) => res);
 };
 
+const updateOrder = async (id, body) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.patch(`${url}/${id}`, body, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 const createItem = (body) => {
   const token = JSON.parse(localStorage.getItem("token"))
   return fetch(url, {
@@ -83,7 +93,8 @@ export {
   findOrdersBySeller,
   findOrdersByAgency,
   findFilteredOrders, 
-  createOrder, 
+  createOrder,
+  updateOrder,
   createItem, 
   deleteOrder 
 };
