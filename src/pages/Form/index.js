@@ -356,7 +356,7 @@ export default function Form() {
                   id="deliveryDate"
                   type="datetime-local"
                   className="form-control form-control-sm"
-                  min={limitDeliveryDateField.toISOString()}
+                  min={limitDeliveryDateField.toISOString().split(':').slice(0, 2).join(':')}
                   value={search.deliveryDate}
                   onChange={handlerChangeSearch}
                   required
