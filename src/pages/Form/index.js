@@ -34,6 +34,8 @@ export default function Form() {
   const [loading, setLoading] = useState(false);
   const [invoiceType, setInvoiceType] = useState(false);
   const selectBranchRef = useRef();
+  const limitDeliveryDateField = new Date()
+  limitDeliveryDateField.setHours(2)
 
   useEffect(() => {
     getAllClients().then((data) => setClientes(data));
@@ -354,15 +356,13 @@ export default function Form() {
                   id="deliveryDate"
                   type="datetime-local"
                   className="form-control form-control-sm"
-                  min={new Date().toISOString().split(':').slice(0, 2).join(':')}
+                  min={limitDeliveryDateField.toISOString()}
                   value={search.deliveryDate}
                   onChange={handlerChangeSearch}
-                  
                   required
                 />
               </div>
             </div>
-            {console.log(new Date().toISOString().split(':').slice(0, 2).join(':'))}
             <div className="w-100">
               <label className="fw-bold">ARCHIVOS ADJUNTOS</label>
               <div className="row">
