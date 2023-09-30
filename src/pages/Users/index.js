@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import * as GoIcons from "react-icons/go"
 import TableUsers from "../../components/TableUsers"
 import ModalUsers from "../../components/ModalUsers";
 import { findUsers } from "../../services/userService"
 
-export default function Orders() {
+export default function Users() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [suggestions, setSuggestions] = useState([])
   const [search, setSearch] = useState('')
   const [showModalUsers, setShowModalUsers] = useState(false)
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
 
   useEffect(() => {
     getAllUsers()
@@ -27,7 +25,6 @@ export default function Orders() {
         setLoading(false)
       })
       .catch((error) => {
-        console.log(error)
         setLoading(false)
       });
   }

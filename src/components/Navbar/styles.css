@@ -58,7 +58,7 @@
   align-items: center;
   padding: 8px;
   list-style: none;
-  height: 40px;
+  min-height: 40px;
   transition: .3s;
 }
 
@@ -74,7 +74,7 @@
   height: 100%;
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 8px;
   border-radius: 4px;
 }
 

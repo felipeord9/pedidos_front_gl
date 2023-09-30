@@ -1,33 +1,21 @@
-import axios from 'axios';
+import axios from 'axios'
 import { config } from '../config'
-const url = `${config.apiUrl}/clients`;
-const url2 = `${config.apiUrl2}/clients`
 
-function getAllClients() {
-  return fetch(url)
-  .then(res => res.json())
-  .then(res => res.data)
-}
+const url2 = `${config.apiUrl2}/branches`
 
-function getAllClientsPOS() {
+function getAllBranchesPOS() {
   const token = JSON.parse(localStorage.getItem("token"))
   return fetch(url2, {
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
-    }
+    },
   })
     .then(res => res.json())
     .then(res => res.data)
 }
 
-function getOneClient(id) {
-  return fetch(`${url}/${id}`)
-    .then(res => res.json())
-    .then(res => res.data)
-}
-
-async function createClientPOS(body) {
+async function createBranchPOS(body) {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.post(url2, body, {
     headers: {
@@ -37,7 +25,7 @@ async function createClientPOS(body) {
   return data
 }
 
-async function updateClientPOS(id, body) {
+async function updateBranchPOS(id, body) {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.patch(`${url2}/${id}`, body, {
     headers: {
@@ -48,9 +36,7 @@ async function updateClientPOS(id, body) {
 }
 
 export {
-  getAllClients,
-  getAllClientsPOS,
-  getOneClient,
-  createClientPOS,
-  updateClientPOS
+  getAllBranchesPOS,
+  createBranchPOS,
+  updateBranchPOS
 }

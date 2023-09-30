@@ -315,8 +315,8 @@ function TableOrders({ orders, getAllOrders, loading }) {
           rangeSeparatorText: "de",
           selectAllRowsItem: false,
         }}
-        paginationPerPage={15}
-        paginationRowsPerPageOptions={[15, 25, 50]}
+        paginationPerPage={50}
+        paginationRowsPerPageOptions={[15, 25, 50, 100]}
         noDataComponent={
           <div style={{ padding: 24 }}>Ningún resultado encontrado.</div>
         }
