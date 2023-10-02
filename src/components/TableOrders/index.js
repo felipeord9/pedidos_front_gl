@@ -10,9 +10,9 @@ import { updateOrder } from "../../services/orderService";
 import "./styles.css";
 
 const styleStatus = {
-  "pedido nuevo": "dark",
+  "pedido nuevo": "primary",
   alistamiento: "secondary",
-  "verificando pago": "primary",
+  "verificando pago": "info",
   "en ruta": "warning",
   rechazado: "danger",
   entregado: "success",
@@ -23,14 +23,14 @@ function TableOrders({ orders, getAllOrders, loading }) {
   const [isMobile, setIsMobile] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const columns = [
-    {
+    /* {
       id: "no",
       name: "No.",
       selector: (row) => row.id,
       sortable: true,
       width: "85px",
       center: true,
-    },
+    }, */
     {
       id: "options",
       name: "",
@@ -79,9 +79,9 @@ function TableOrders({ orders, getAllOrders, loading }) {
           disabled={user.role === "vendedor"}
           onChange={(e) => updateState(e, row)}
         >
-          <option className="text-secondary">pedido nuevo</option>
+          <option className="text-primary">pedido nuevo</option>
           <option className="text-secondary">alistamiento</option>
-          <option className="text-primary">verificando pago</option>
+          <option className="text-info">verificando pago</option>
           <option className="text-warning">en ruta</option>
           <option id="reasonForRejection" className="text-danger">rechazado</option>
           <option id="reasonForDelivery" className="text-success">entregado</option>
@@ -137,7 +137,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
       id: "row_co_id",
       name: "No. Pedido",
       selector: (row) => `${row.coId}-PDV-${row.rowId}`,
-      width: "125px",
+      width: "200px",
     },
     {
       id: "delivery_date",

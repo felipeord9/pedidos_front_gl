@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import * as BsIcons from "react-icons/bs"
+import TableSellers from "../../components/TableSellers";
+import ModalSellers from "../../components/ModalSellers";
 import { findSellers } from "../../services/sellerService"
 
 export default function Sellers () {
-  const [branches, setBranches] = useState([]);
-  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [sellers, setSellers] = useState([]);
+  const [selectedSeller, setSelectedSeller] = useState(null);
   const [suggestions, setSuggestions] = useState([])
   const [search, setSearch] = useState('')
-  const [showModalBranches, setShowModalBranches] = useState(false)
+  const [showModalSellers, setShowModalSellers] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -17,8 +19,8 @@ export default function Sellers () {
   const findAllSellersPOS = () => {
     setLoading(true)
     findSellers()
-      .then((data) => {
-        setBranches(data)
+      .then(({data}) => {
+        setSellers(data)
         setSuggestions(data)
         setLoading(false)
       })
@@ -27,38 +29,38 @@ export default function Sellers () {
       });
   }
 
-  const searchBranches = (e) => {
+  const searchSellers = (e) => {
     const { value } = e.target
     if(value !== "") {
-      const filteredUsers = branches.filter((elem) => {
+      const filteredSellers = sellers.filter((elem) => {
         if(
-          elem.branch.includes(value) ||
-          elem.descripcion.toLowerCase().includes(value.toLowerCase()) ||
-          elem.client.razonSocial.toLowerCase().includes(value.toLowerCase())
+          elem.id === parseInt(value) ||
+          elem.description?.toLowerCase().includes(value.toLowerCase()) ||
+          elem.mailCommercial?.toLowerCase().includes(value.toLowerCase())
         ) {
           return elem
         }
       })
-      if(filteredUsers.length > 0) {
-        setSuggestions(filteredUsers)
+      if(filteredSellers.length > 0) {
+        setSuggestions(filteredSellers)
       } else {
-        setSuggestions(branches)
+        setSuggestions(sellers)
      }
     } else {
-      setSuggestions(branches)
+      setSuggestions(sellers)
     }
     setSearch(value)
   }
 
   return (
     <div className="d-flex flex-column container mt-5">
-      {/* <ModalBranches
-        branch={selectedBranch}
-        setBranch={setSelectedBranch}
-        showModal={showModalBranches} 
-        setShowModal={setShowModalBranches} 
-        reloadInfo={findAllBranchesPOS} 
-      /> */}
+      <ModalSellers
+        seller={selectedSeller}
+        setSeller={setSelectedSeller}
+        showModal={showModalSellers} 
+        setShowModal={setShowModalSellers} 
+        reloadInfo={findAllSellersPOS} 
+      />
       <div className="d-flex flex-column gap-2 h-100">
         <div className="d-flex justify-content-end mt-2 gap-3">
           <input
@@ -66,22 +68,22 @@ export default function Sellers () {
             value={search}
             className="form-control form-control-sm w-100"
             placeholder="Buscar vendedor"
-            onChange={searchBranches }
+            onChange={searchSellers }
           />
           <button
             title="Nuevo vendedor"
             className="d-flex align-items-center text-nowrap btn btn-sm btn-danger text-light gap-1" 
-            onClick={(e) => setShowModalBranches(!showModalBranches)}>
+            onClick={(e) => setShowModalSellers(!showModalSellers)}>
               Nuevo vendedor
               <BsIcons.BsPersonFillAdd style={{width: 15, height: 15}} />
           </button>
         </div>
-        {/* <TableBranches 
-          branches={suggestions} 
-          setShowModal={setShowModalBranches} 
-          setSelectedBranch={setSelectedBranch}
-          loading={loading}
-        /> */}
+        <TableSellers
+          sellers={suggestions} 
+          setShowModal={setShowModalSellers} 
+          setSelectedSeller={setSelectedSeller}
+          loading={loading} 
+        />
       </div>
     </div>
   )
