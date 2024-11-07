@@ -70,7 +70,7 @@ function ComboBox({ id, options, item, setItem, invoiceType }) {
         <option selected disabled value="">
           {suggestions?.length > 0
             ? "-- Seleccione --"
-            : "No se encontraron coincidencias..."}
+            : "Cargando..."}
         </option>
         {suggestions
           ?.sort((a, b) => a.branch - b.branch)

@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InputPassword from "../../components/InputPassword";
 import useUser from "../../hooks/useUser";
+import AuthContext from "../../context/authContext";
 import Logo from "../../assets/logo-el-gran-langostino.png";
 import "./styles.css";
 
@@ -10,9 +11,14 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { user, setUser } = useContext(AuthContext);
 
   useEffect(() => {
-    if (isLogged) navigate("/inicio");
+    /* if (isLogged) navigate("/inicio"); */
+    if (isLogged && user.role==='aprobador' || isLogged && user.role==='precios' ) navigate('/solicitudes')
+      else if(isLogged){
+        navigate("/inicio");
+    }
   }, [isLogged, navigate]);
 
   const handleLogin = async (e) => {

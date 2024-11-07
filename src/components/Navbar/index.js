@@ -14,6 +14,14 @@ export default function Navbar() {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const handleClickImg = (e) => {
+    if(user.role==='aprobador'){
+      return navigate('/solicitudes')
+    }else{
+      return navigate('/inicio')
+    }
+  }
+
   return (
     <>
       {isLogged && (
@@ -36,7 +44,8 @@ export default function Navbar() {
                 src={Logo}
                 width={100}
                 className="navbar-img"
-                onClick={(e) => navigate("/inicio")}
+                /* onClick={(e) => navigate("/inicio")} */
+                onClick={(e)=>handleClickImg(e)}
                 alt=""
                 style={{ cursor: "pointer" }}
               />

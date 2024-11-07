@@ -5,8 +5,10 @@ import Swal from "sweetalert2";
 import * as FaIcons from "react-icons/fa";
 import { Modal } from "react-bootstrap";
 import DocOrderPDF from "../DocOrderPDF";
+import DocOrderPosPDF from "../DocOrderPosPDF";
 import AuthContext from "../../context/authContext";
 import { updateOrder } from "../../services/orderService";
+import { TfiTicket } from "react-icons/tfi";
 import "./styles.css";
 
 const styleStatus = {
@@ -22,6 +24,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
   const { user } = useContext(AuthContext);
   const [isMobile, setIsMobile] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrderPos, setSelectedOrderPos] = useState(null);
   const columns = [
     /* {
       id: "no",
@@ -62,6 +65,38 @@ function TableOrders({ orders, getAllOrders, loading }) {
           </div>
         ),
       width: "50px",
+    },
+    {
+      id: "options",
+      name: "POS",
+      center: true,
+      cell: (row, index, column, id) =>
+        isMobile ? (
+          <div className="d-flex gap-2 p-1">
+            <PDFDownloadLink
+              document={<DocOrderPosPDF order={row} />}
+              fileName={`${row?.coId}-PDV-${row?.rowId}.pdf`}
+              onClick={(e) => {
+                e.download();
+              }}
+            >
+              <FaIcons.FaDownload />
+            </PDFDownloadLink>
+          </div>
+        ) : (
+          <div className="d-flex gap-2 p-1">
+            <button
+              title="Ver PDF de pedido pos"
+              className="btn btn-sm btn-secondary"
+              onClick={(e) => {
+                setSelectedOrderPos(row);
+              }}
+            >
+              <TfiTicket  />
+            </button>
+          </div>
+        ),
+      width: "60px",
     },
     {
       id: "state",
@@ -287,8 +322,8 @@ function TableOrders({ orders, getAllOrders, loading }) {
 
   return (
     <div
-      className="d-flex flex-column rounded m-0 p-0"
-      style={{ height: "calc(100% - 60px)", width: "100%" }}
+      className="d-flex flex-column rounded m-0 p-0 table-orders"
+      style={{ width: "100%" }}
     >
       <DataTable
         className="bg-light text-center border border-2 h-100 p-0 m-0"
@@ -321,6 +356,8 @@ function TableOrders({ orders, getAllOrders, loading }) {
           <div style={{ padding: 24 }}>Ningún resultado encontrado.</div>
         }
       />
+
+      {/* Modal pdf normal */}
       <Modal
         size="lg"
         show={Boolean(selectedOrder && !isMobile)}
@@ -335,6 +372,24 @@ function TableOrders({ orders, getAllOrders, loading }) {
           showToolbar={true}
         >
           <DocOrderPDF order={selectedOrder} />
+        </PDFViewer>
+      </Modal>
+
+      {/* Modal pos */}
+      <Modal
+        size="lg"
+        show={Boolean(selectedOrderPos && !isMobile)}
+        onHide={() => setSelectedOrderPos(null)}
+      >
+        <PDFViewer
+          className="rounded"
+          style={{
+            width: "100%",
+            height: "90vh",
+          }}
+          showToolbar={true}
+        >
+          <DocOrderPosPDF order={selectedOrderPos} />
         </PDFViewer>
       </Modal>
     </div>

@@ -1,0 +1,24 @@
+select option {
+  border-radius: 5;
+}
+
+.titulo-produc{
+  font-size: large;
+}
+
+.cant-cost{
+  font-size: medium;
+}
+
+
+@media screen and (max-width: 990px) {
+  .titulo-produc{
+    font-size: medium;
+  }
+  .cant-cost{
+    font-size: small;
+  }
+  .text-button{
+    display: none;
+  }
+}

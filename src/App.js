@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from "./pages/Login"
 import Orders from "./pages/Orders"
 import Form from "./pages/Form";
+import Prices from './pages/Prices';
 import Users from "./pages/Users"
 import Clients from './pages/Clients';
 import Branches from './pages/Branches';
@@ -11,11 +12,14 @@ import SendRecoveryPassword from "./pages/SendRecoveryPassword"
 import RecoveryPassword from './pages/RecoveryPassword';
 import Page404 from "./pages/Page404"
 import Navbar from './components/Navbar';
-import PrivateRoute from "./components/PrivateRoute"
+import PrivateRoute from "./components/PrivateRoute";
+import Requests from './pages/requests';
 import { AuthContextProvider } from './context/authContext';
 import { ClientContextProvider } from "./context/clientContext";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import Descarga from './pages/desacargar';
 
 function App() {
   return (
@@ -29,6 +33,8 @@ function App() {
               <Route path='login' element={<Login />} />
               <Route path='/inicio' element={<PrivateRoute component={Orders} />} />
               <Route path='/pedido' element={<PrivateRoute component={Form} />} />
+              <Route path='/solicitudes' element={<PrivateRoute component={Requests} />} />
+              <Route path='/Auth/price' element={<PrivateRoute component={Prices} />} />
               <Route path='/usuarios' element={<PrivateRoute component={Users} />} />
               <Route path='/pos/clientes' element={<PrivateRoute component={Clients} />} />
               <Route path='/pos/sucursales' element={<PrivateRoute component={Branches} />} />
@@ -37,6 +43,9 @@ function App() {
               <Route path='/enviar/recuperacion' element={<SendRecoveryPassword/>} />
               <Route path='/recuperacion/contrasena/:token' element={<RecoveryPassword/>} />
               <Route path='*' element={<Page404 />} />
+
+              <Route path='/descarga' element={<Descarga/>} />
+
             </Routes>
           </div>
         </Router>
