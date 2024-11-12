@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import React from 'react';
 import DataTable from "react-data-table-component";
 import AuthContext from "../../context/authContext";
-import { updateItem , sendAnswer , updateRequest } from "../../services/requestService";
+import { updateItem , sendAnswer , updateRequest , sendConfirm , sendRechazo } from "../../services/requestService";
 import { MdCancel } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdEditDocument } from "react-icons/md";
@@ -250,32 +250,28 @@ function TableSingleRequest({ request, setRequest , allRequest , aprobados , rec
     }
 
     /* Cambio de estado de los productos, envio de respuesta confirm y cambio de status en la tabla */
-    const handleConfirm = (e) =>{
+    const handleConfirm = (e,id) =>{
       e.preventDefault();
+
+      ////logica para actualizar la variable allRequest
+      //nueva lista de productos
+      const nuevaLista = [...Selected]
+      const indice = nuevaLista.findIndex(item=>item.id===id)
+      if(indice !== -1){
+        nuevaLista[indice].RequestProduct.state='Aprobado';
+      }
+      setSelected(nuevaLista)
+
+      //logica de la funcion confirmar
       updateItem(row.RequestProduct.id,aprob)
       .then(()=>{
-        /* await setSend('enviado') */
         updateRequest(allRequest.id,all)
         .then(()=>{
-          /* handleSendEmail(e) */
           if(alreadySend===''){
-            /* sendAnswer(allRequest)
-            .then(() =>{ */
               sendAnswer(allRequest)              
               setColor('green')
               setStatus('Aprobado')
-              /* setSend('enviado')
-              setState(true) */
-              /* setAlreadySend(true) */
-              /* setAlreadyState(true) */
-            }/* ,
-          ) */
-          /* setSend('enviado') */
-          /* }else{
-            setColor('green')
-            setStatus('Aprobado')
-          } */
-          /* setAlreadySend('enviado') */
+            }
         })
         .catch(()=>{
           setColor('')
@@ -289,26 +285,36 @@ function TableSingleRequest({ request, setRequest , allRequest , aprobados , rec
     }
 
     /* update de estado, envio de respuesta reject y cambio de status en la tabla */
-    const handleReject = (e) =>{
+    const handleReject = (e,id) =>{
       e.preventDefault();
+
+      ////logica para actualizar la variable allRequest
+      //nueva lista de productos
+      const nuevaLista = [...Selected]
+      const indice = nuevaLista.findIndex(item=>item.id===id)
+      if(indice !== -1){
+        nuevaLista[indice].RequestProduct.state='Rechazado';
+      }
+      setSelected(nuevaLista)
+
+      //logica de la funcion rechazar
       updateItem(row.RequestProduct.id,Rech)
       .then(()=>{
-        if(alreadySend===''){
-          updateRequest(allRequest.id,allnegative)
-          sendAnswer(allRequest)
-          setAlreadySend(true)
-          .then(()=>{
+        updateRequest(allRequest.id,allnegative)
+        .then(()=>{
+          if(alreadySend===''){
+            sendAnswer(allRequest)
             setColor('red')
             setStatus('Rechazado')
             /* setAlreadySend('enviado') */
             /* setAlreadySend(true)
             setAlreadyState(true) */
+            }else{
+              setColor('red')
+              setStatus('Rechazado')
+              /* setAlreadyState(true) */
+            }
           })
-        }else{
-          setColor('red')
-          setStatus('Rechazado')
-          /* setAlreadyState(true) */
-        }
       })
       .catch(()=>{
         Swal.fire({
@@ -320,20 +326,21 @@ function TableSingleRequest({ request, setRequest , allRequest , aprobados , rec
         })
       })
     }
+
     return(
       <div className="d-flex justify-content-end align-items-end text-align-end w-100">
         {(user.role==='admin' || user.role==='aprobador') && (status === null || status === '') ? (
           <div className='d-flex'>
 
           {/* Boton para confirmar item */}
-          <button onClick={(e)=>handleConfirm(e)}/* updateItem(row.RequestProduct.id,aprob),updateRequest(allRequest.id,all),handleClick(e), setAlreadySend(true), handleSendEmail(e) */
+          <button onClick={(e)=>handleConfirm(e, row.id)}/* updateItem(row.RequestProduct.id,aprob),updateRequest(allRequest.id,all),handleClick(e), setAlreadySend(true), handleSendEmail(e) */
            title="Aprobar" className='btn btn-sm btn-success me-2'
           >
             Aprobar <FaCheckCircle className="ms-1 text-button"/>
           </button>
 
           {/* Boton para rechazar item */}
-          <button onClick={(e)=>handleReject(e)}/* updateItem(row.RequestProduct.id,Rech),handleClickRech(e), setAlreadySend(true), handleSendEmail(e) */
+          <button onClick={(e)=>handleReject(e, row.id)}/* updateItem(row.RequestProduct.id,Rech),handleClickRech(e), setAlreadySend(true), handleSendEmail(e) */
             title="Rechazar" className='btn btn-sm btn-danger '
           >
             Rechazar <MdCancel className="ms-1 text-button"/>
