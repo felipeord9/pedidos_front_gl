@@ -13,6 +13,7 @@ import {
   findOrdersByAgency,
 } from "../../services/orderService";
 import './styles.css'
+import Swal from "sweetalert2";
 
 export default function Orders() {
   const { user } = useContext(AuthContext);
@@ -26,6 +27,7 @@ export default function Orders() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const refTable = useRef();
+  const [typeFillDate, setTypeFillDate] = useState('');
 
   useEffect(() => {
     getAllOrders();
@@ -56,12 +58,39 @@ export default function Orders() {
       });
   };
 
-  const getFilteredOrders = () => {
+  const getFilteredOrders = async () => {
     if (filterDate.initialDate && filterDate.finalDate) {
-      const initialDate = new Date(filterDate.initialDate.split('-').join('/')).toLocaleDateString();
-      const finalDate = new Date(filterDate.finalDate.split('-').join('/')).toLocaleDateString();
+
+      const initialDate = new Date(filterDate.initialDate);
+      await initialDate.setDate(initialDate.getDate() + 1);
+      await initialDate.setHours(1, 1, 1, 1);
+
+      const finalDate = new Date(filterDate.finalDate);
+      await finalDate.setDate(finalDate.getDate() + 1);
+      await finalDate.setHours(23, 59, 59, 999);
+
+      const filteredOrders = await orders.filter((elem) => {
+        const splitDate = new Date(elem.createdAt)
+        if (initialDate <= splitDate && splitDate <= finalDate) {
+          return elem;
+        }
+        return 0;
+      });
+
+      setSuggestions(filteredOrders);
+    }
+  };
+
+  const getFilteredOrdersByDelivery = () => {
+    if (filterDate.initialDate && filterDate.finalDate) {
+      const initialDate = new Date(filterDate.initialDate);
+      /* initialDate.setDate(initialDate.getDate() + 1); */
+
+      const finalDate = new Date(filterDate.finalDate);
+      finalDate.setDate(finalDate.getDate() + 1);
+
       const filteredOrders = orders.filter((elem) => {
-        const splitDate = new Date(elem.createdAt).toLocaleDateString();
+        const splitDate = new Date(elem.deliveryDate);
         if (splitDate >= initialDate && splitDate <= finalDate) {
           return elem;
         }
@@ -85,6 +114,7 @@ export default function Orders() {
       initialDate: 0,
       finalDate: 0,
     });
+    setTypeFillDate('');
     getAllOrders();
   };
 
@@ -171,7 +201,9 @@ export default function Orders() {
                 title="Filtro por fecha"
                 type="button"
                 class="d-flex align-items-center btn btn-sm btn-primary"
-                onClick={getFilteredOrders}
+                onClick={(e)=>(
+                  typeFillDate === 'creacion' ? getFilteredOrders() : getFilteredOrdersByDelivery()
+                )}
               >
                 <FaIcons.FaFilter />
               </button>
@@ -184,25 +216,68 @@ export default function Orders() {
                 <span class="visually-hidden">Toggle Dropdown</span>
               </button>
               <ul class="dropdown-menu p-0 m-0">
-                <li className="d-flex flex-row gap-2">
+                {/* <label className="d-flex w-100 text-primary fw-bold ms-2">Tipo de filtro:</label> */} 
+                <li
+                  className="d-flex w-100 flex-row gap-4 mb-1"
+                >
+                  <button
+                    className="btn btn-sm btn-secondary w-50 ms-2 mt-1"
+                    style={{
+                      backgroundColor: typeFillDate === '' ? 'grey' : typeFillDate === 'creacion' ? 'blue' : 'grey',
+                      color:'white',
+                      whiteSpace:'nowrap',
+                      paddingLeft: 21,
+                      paddingRight: 21
+                    }}
+                    onClick={(e)=>(
+                      setTypeFillDate('creacion'),
+                      e.stopPropagation() // Evitar que el dropdown se cierre
+                    )}
+                  >
+                    Fecha creación
+                  </button>
+                  <button
+                    className="btn btn-sm btn-secondary w-50 me-2 mt-1"
+                    style={{
+                      backgroundColor: typeFillDate === '' ? 'grey' : typeFillDate === 'entrega' ? 'blue' : 'grey',
+                      color:'white',
+                      whiteSpace:'nowrap',
+                      paddingLeft: 24,
+                      paddingRight: 24
+                    }}
+                    onClick={(e)=>(
+                      setTypeFillDate('entrega'),
+                      e.stopPropagation()
+                    )}
+                  >
+                    Fecha entrega
+                  </button>
+                </li>
+                {/* <label className="d-flex w-100 ms-2 text-primary fw-bold">Intervalo de tiempo:</label> */}
+                {typeFillDate !== '' &&
+                  <li className="d-flex flex-row gap-2 mb-2">
                   <input
                     id="initialDate"
                     type="date"
                     value={filterDate.initialDate}
-                    className="form-control form-control-sm"
+                    className="form-control form-control-sm ms-2"
                     max={filterDate.finalDate}
                     onChange={handleChangeFilterDate}
+                    disabled={typeFillDate === ''}
                   />
                   -
                   <input
                     id="finalDate"
                     type="date"
                     value={filterDate.finalDate}
-                    className="form-control form-control-sm"
+                    className="form-control form-control-sm me-2"
                     min={filterDate.initialDate}
+                    disabled={typeFillDate === '' || filterDate.initialDate === null}
                     onChange={handleChangeFilterDate}
                   />
+                  
                 </li>
+                }
                 <li>
                   <button
                     className="btn btn-sm btn-danger w-100"

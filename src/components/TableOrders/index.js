@@ -182,6 +182,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
           "es-CO"
         ) /* `${row.deliveryDate}` */,
       width: "200px",
+      sortable: true,
     },
     {
       id: "co_description",
