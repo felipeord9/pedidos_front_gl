@@ -34,11 +34,21 @@ const Descarga = () => {
     const codigosLista1 = data.map(item => item.item.codigo);
     const codigosLista2 = pg.map(item => item.id);
 
+    const descripcionLista1 = data.map(item => item.item.description);
+    const descripcionLista2 = pg.map(item => item.description);
     /* Swal.fire({
       title:`${codigosLista1}`
     }) */
     // Elementos únicos de lista1   
     const unicosLista1 = codigosLista1.filter(item => !codigosLista2.includes(parseInt(item)));
+
+    const diferencias = data.filter(
+      (itemA) =>
+        !pg.some((itemB) => 
+          Number(itemA.item.codigo) === Number(itemB.id) && Text(itemA.item.description).includes(itemB.description)
+        )
+    );
+    
     // Elementos únicos de lista2
     const unicosLista2 = pg.filter(item => !codigosLista1.includes(item.codigo));
 
@@ -51,6 +61,7 @@ const Descarga = () => {
   return (
     <div>
       <h1>Data Table</h1>
+      {/* {JSON.stringify(pg)} */}
       {JSON.stringify(elementosUnicos)}
       {/* <table>
         <thead>

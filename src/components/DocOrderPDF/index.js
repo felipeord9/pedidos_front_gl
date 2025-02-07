@@ -95,6 +95,9 @@ export default function DocOrderPDF({ order }) {
               >
                 PEDIDO DE VENTA
               </Text>
+              <Text style={{ fontSize:8, marginBottom:2, marginTop:5 }}>
+                Nota: Este documento no corresponde a una factura
+              </Text>
             </View>
             <View style={styles.table}>
               <View style={{ ...styles.tableRow, alignItems: "center" }}>
