@@ -372,7 +372,7 @@ export default function DocOrderPosPDF({ order }) {
                 <Text style={{...styles.tableCell, paddingTop:3, fontSize:7.2 }}>${formater(order?.total)}</Text>
               </View>
             </View>
-            <View style={{ height: 130, fontSize: 8 }}>
+            <View style={{ height: 'auto', fontSize: 8 }}>
               <View
                 style={{
                   position: "relative",

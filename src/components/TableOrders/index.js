@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import DataTable from "react-data-table-component";
-import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFViewer, PDFDownloadLink , pdf } from "@react-pdf/renderer";
 import Swal from "sweetalert2";
 import * as FaIcons from "react-icons/fa";
 import { Modal } from "react-bootstrap";
@@ -18,6 +18,44 @@ const styleStatus = {
   "en ruta": "warning",
   rechazado: "danger",
   entregado: "success",
+};
+
+const handleDownload = async (row) => {
+  try {
+    // Generar PDF en el momento
+    const blob = await pdf(<DocOrderPDF order={row} />).toBlob();
+
+    // Crear enlace temporal
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${row?.coId}-PDV-${row?.rowId}.pdf`;
+    a.click();
+
+      // Liberar memoria
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar el PDF", error);
+  }
+};
+
+const handleDownload2 = async (row) => {
+  try {
+    // Generar PDF en el momento
+    const blob = await pdf(<DocOrderPosPDF order={row} />).toBlob();
+
+    // Crear enlace temporal
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${row?.coId}-PDV-${row?.rowId}.pdf`;
+    a.click();
+
+      // Liberar memoria
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar el PDF", error);
+  }
 };
 
 function TableOrders({ orders, getAllOrders, loading }) {
@@ -41,7 +79,17 @@ function TableOrders({ orders, getAllOrders, loading }) {
       cell: (row, index, column, id) =>
         isMobile ? (
           <div className="d-flex gap-2 p-1">
-            <PDFDownloadLink
+            <button
+              className="btn btn-sm"
+              onClick={(e) => handleDownload(row)}
+              style={{
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <FaIcons.FaDownload />
+            </button>
+            {/* <PDFDownloadLink
               document={<DocOrderPDF order={row} />}
               fileName={`${row?.coId}-PDV-${row?.rowId}.pdf`}
               onClick={(e) => {
@@ -49,7 +97,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
               }}
             >
               <FaIcons.FaDownload />
-            </PDFDownloadLink>
+            </PDFDownloadLink> */}
           </div>
         ) : (
           <div className="d-flex gap-2 p-1">
@@ -73,7 +121,17 @@ function TableOrders({ orders, getAllOrders, loading }) {
       cell: (row, index, column, id) =>
         isMobile ? (
           <div className="d-flex gap-2 p-1">
-            <PDFDownloadLink
+            <button
+              className="btn btn-sm"
+              onClick={(e) => handleDownload2(row)}
+              style={{
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <FaIcons.FaDownload />
+            </button>
+            {/* <PDFDownloadLink
               document={<DocOrderPosPDF order={row} />}
               fileName={`${row?.coId}-PDV-${row?.rowId}.pdf`}
               onClick={(e) => {
@@ -81,7 +139,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
               }}
             >
               <FaIcons.FaDownload />
-            </PDFDownloadLink>
+            </PDFDownloadLink> */}
           </div>
         ) : (
           <div className="d-flex gap-2 p-1">

@@ -246,7 +246,7 @@ export default function DocOrderPDF({ order }) {
                 border: 1,
                 borderColor: "#000",
                 borderStyle: "solid",
-                height: "100%",
+                height: "70%",
               }}
             >
               <View
