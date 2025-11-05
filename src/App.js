@@ -5,6 +5,8 @@ import Form from "./pages/Form";
 import Prices from './pages/Prices';
 import Users from "./pages/Users"
 import Clients from './pages/Clients';
+import ClientsPos from './pages/ClientsPos'
+import AddClientPos from './pages/addClientPos';
 import Branches from './pages/Branches';
 import Sellers from './pages/Sellers';
 import ChangePassword from './pages/ChangePassword';
@@ -37,6 +39,9 @@ function App() {
               <Route path='/Auth/price' element={<PrivateRoute component={Prices} />} />
               <Route path='/usuarios' element={<PrivateRoute component={Users} />} />
               <Route path='/pos/clientes' element={<PrivateRoute component={Clients} />} />
+              <Route path='/clientes/pos' element={<PrivateRoute component={ClientsPos} />} />
+              <Route path='/add/clientes/pos' element={<PrivateRoute component={AddClientPos} />} />
+              <Route path='/edit/client/pos/:id' element={<PrivateRoute component={AddClientPos} />} />
               <Route path='/pos/sucursales' element={<PrivateRoute component={Branches} />} />
               <Route path='/pos/vendedores' element={<PrivateRoute component={Sellers} />} />
               <Route path='/cambiar/contrasena' element={<PrivateRoute component={ChangePassword} />} />

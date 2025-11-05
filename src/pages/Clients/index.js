@@ -66,14 +66,14 @@ export default function Clients () {
             type="search"
             value={search}
             className="form-control form-control-sm w-100"
-            placeholder="Buscar cliente"
+            placeholder="Buscar agencia"
             onChange={searchClients}
           />
           <button
-            title="Nuevo cliente"
+            title="Nuevo agencia"
             className="d-flex align-items-center text-nowrap btn btn-sm btn-danger text-light gap-1" 
             onClick={(e) => setShowModalClients(!showModalClients)}>
-              Nuevo cliente
+              Nuevo agencia
               <GoIcons.GoPersonAdd style={{width: 15, height: 15}} />
           </button>
         </div>

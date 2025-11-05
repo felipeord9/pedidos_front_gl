@@ -1,0 +1,9 @@
+.div-top{
+    flex-direction: row;
+  }
+
+@media (max-width: 800px) {
+  .div-top{
+    flex-direction: column;
+  }
+}

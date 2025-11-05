@@ -3,6 +3,7 @@ import * as AiIcons from "react-icons/ai"
 import * as FaIcons from "react-icons/fa"
 import * as LiaIcons from "react-icons/lia"
 import { MdRequestPage } from "react-icons/md";
+import { HiBuildingStorefront } from "react-icons/hi2";
 
 export const NavBarData = [
   {
@@ -34,9 +35,9 @@ export const NavBarData = [
     access: ['admin']
   },
   {
-    title: "Clientes POS",
+    title: "Agencias POS",
     path: "/pos/clientes",
-    icon: <LiaIcons.LiaUsersSolid />,
+    icon: <HiBuildingStorefront />,
     cName: "nav-text",
     access: ['admin']
   },
@@ -46,6 +47,13 @@ export const NavBarData = [
     icon: <AiIcons.AiOutlineBranches />,
     cName: "nav-text",
     access: ['admin']
+  },
+  {
+    title: "Clientes POS",
+    path: "/clientes/pos",
+    icon: <LiaIcons.LiaUsersSolid />,
+    cName: "nav-text",
+    access: ['admin', 'vendedor', 'agencia', 'aprobador']
   },
   {
     title: "Vendedores POS",

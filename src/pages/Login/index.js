@@ -15,7 +15,7 @@ export default function Login() {
 
   useEffect(() => {
     /* if (isLogged) navigate("/inicio"); */
-    if (isLogged && user.role==='aprobador' || isLogged && user.role==='precios' ) navigate('/solicitudes')
+    if (isLogged && user.role==='aprobador' || isLogged && user.role==='precios' ) navigate('/clientes/pos')
       else if(isLogged){
         navigate("/inicio");
     }

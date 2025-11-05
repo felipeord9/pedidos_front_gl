@@ -8,6 +8,13 @@ function getAllAgencies() {
     .then(res => res.data)
 }
 
+function getAllAgenciesPos() {
+  return fetch(`${url}/pos`)
+    .then(res => res.json())
+    .then(res => res.data)
+}
+
 export {
-  getAllAgencies
+  getAllAgencies,
+  getAllAgenciesPos
 }

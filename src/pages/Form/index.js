@@ -7,6 +7,7 @@ import AuthContext from "../../context/authContext";
 import ClientContext from "../../context/clientContext";
 import { createOrder, deleteOrder } from "../../services/orderService";
 import { getAllClients, getAllClientsPOS } from "../../services/clientService";
+import { findClients } from "../../services/clientsPosService";
 import { getAllAgencies } from "../../services/agencyService";
 import { sendMail } from "../../services/mailService";
 import "./styles.css";
@@ -16,8 +17,13 @@ export default function Form() {
   const { client, setClient } = useContext(ClientContext);
   const [agencia, setAgencia] = useState(null);
   const [sucursal, setSucursal] = useState(null);
+  const [realClientPos, setRealClientPos] = useState(null);
   const [clientes, setClientes] = useState([]);
   const [clientsPOS, setClientsPOS] = useState([]);
+  const [realClientsPos, setRealClientsPos] = useState([]);
+  const [suggestionsClientsPosByCo, setSuggestionsClientsPosByCo] = useState([]);
+  const [suggestionsRealClientsPos, setSuggestionsRealClientsPos] = useState([]);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [agencias, setAgencias] = useState([]);
   const [files, setFiles] = useState(null);
   const [productosAgr, setProductosAgr] = useState({
@@ -34,6 +40,7 @@ export default function Form() {
   const [loading, setLoading] = useState(false);
   const [invoiceType, setInvoiceType] = useState(false);
   const selectBranchRef = useRef();
+  const selectClientPosRef = useRef();
   const limitDeliveryDateField = new Date()
   limitDeliveryDateField.setHours(2)
 
@@ -41,7 +48,18 @@ export default function Form() {
     getAllClients().then((data) => setClientes(data));
     getAllClientsPOS().then((data) => setClientsPOS(data));
     getAllAgencies().then((data) => setAgencias(data));
+    findAllClientsPOS();
   }, []);
+
+  const findAllClientsPOS = () => {
+    findClients()
+      .then(({data}) => {
+        setRealClientsPos(data)
+      })
+      .catch((error) => {
+        console.log('error')
+      });
+  }
 
   const findById = (id, array, setItem) => {
     const item = array.find((elem) => elem.nit === id);
@@ -123,6 +141,7 @@ export default function Form() {
             agency: agencia,
             seller: sucursal.vendedor,
             branch: sucursal,
+            clientPos: clienteSeleccionado,
             products: productosAgr,
             deliveryDate: search.deliveryDate,
             createdAt: new Date(),
@@ -201,6 +220,45 @@ export default function Form() {
     });
   };
 
+  const handleClientByCo = (value) => {
+    /* alert(JSON.stringify(value))
+    const co = JSON.stringify(value) */
+    const filtro = realClientsPos.filter((item)=>item.coId === value.id)
+    if(realClientsPos.length > 0){
+      setSuggestionsClientsPosByCo(filtro)
+      setSuggestionsRealClientsPos(filtro)
+    }else{
+      setSuggestionsClientsPosByCo([])
+    }
+  }
+
+  //manejador del input para el porducto
+    const handlerChangeCliente = (e) => {
+      const { value } = e.target;
+      setClienteSeleccionado(null);
+      if (value !== "" && value !== null && suggestionsClientsPosByCo) {
+        const filter = suggestionsClientsPosByCo.filter((elem) =>
+          elem.razonSocial.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestionsRealClientsPos(filter);
+      } else {
+        setSuggestionsRealClientsPos(suggestionsClientsPosByCo);
+        setClienteSeleccionado(null)
+      }
+      selectClientPosRef.current.selectedIndex = 0;
+    };
+  
+    //funcion para buscar producto por descripcion cuando lo seleccionen en el select
+    const findCientByDescrip = (e) => {
+      const { value } = e.target;
+      const item = suggestionsClientsPosByCo.find((elem)=> elem.razonSocial.toLowerCase() === value.toLowerCase());
+      if(item){
+        setClienteSeleccionado(item)
+      }else{
+        setClienteSeleccionado(null)
+      }
+    }
+
   return (
     <div
       className="container d-flex flex-column w-100 py-3 mt-5"
@@ -243,7 +301,7 @@ export default function Form() {
               <select
                 ref={selectBranchRef}
                 className="form-select form-select-sm"
-                onChange={(e) => setAgencia(JSON.parse(e.target.value))}
+                onChange={(e) => (setAgencia(JSON.parse(e.target.value), handleClientByCo(JSON.parse(e.target.value))))}
                 required
               >
                 <option selected value="" disabled>
@@ -336,6 +394,67 @@ export default function Form() {
                 </div>
               </div>
             </div>
+            {invoiceType &&
+              <div>
+                <hr className="my-1" />
+                <div>
+                  <label className="fw-bold">CLIENTE POS</label>
+                    <div className="d-flex align-items-center position-relative w-100">
+                      <input
+                        id="razonSocial"
+                        type="search"
+                        autoComplete="off"
+                        placeholder="Selecciona el cliente pos"
+                        value={
+                          clienteSeleccionado ?
+                          clienteSeleccionado.razonSocial :
+                          search?.razonSocial
+                        }
+                        onChange={handlerChangeCliente}
+                        className="form-control form-control-sm input-select"
+                        style={{textTransform:'uppercase'}}
+                      />
+                      <select
+                        ref={selectClientPosRef}
+                        id="razonSocial"
+                        className="form-select form-select-sm"
+                        onChange={(e)=>findCientByDescrip(e)}
+                      >
+                        <option value="" selected disabled>
+                          -- SELECCIONE EL CLIENTE POS--
+                        </option>
+                        {suggestionsRealClientsPos
+                          ?.sort((a,b)=>a.id - b.id)
+                          .map((elem) => (
+                          <option key={elem.id} value={elem.razonSocial}>
+                            {elem.razonSocial}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* <div className="d-flex flex-column align-items-start">
+                      <select
+                        ref={selectClientPosRef}
+                        className="form-select form-select-sm"
+                        onChange={(e) => setRealClientPos(JSON.parse(e.target.value))}
+                        required
+                      >
+                        <option selected value="" disabled>
+                          -- Seleccione la Sucursal --
+                        </option>
+                        {suggestionsRealClientsPos
+                          .sort((a, b) => a.id - b.id)
+                          .map((elem) => (
+                            <option id={elem.id} value={JSON.stringify(elem)}>
+                              {elem.razonSocial}
+                            </option>
+                          ))}
+                      </select>
+                    </div> */}
+                </div>
+              </div>
+            }
+            {JSON.stringify(clienteSeleccionado)}
             <hr className="my-1" />
             <div className="d-flex flex-row gap-4">
               <div className="w-100">

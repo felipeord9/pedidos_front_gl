@@ -194,6 +194,14 @@ export default function DocOrderPDF({ order }) {
                       </Text>
                       {order?.branchDescription}
                     </Text>
+                    {order.clientPosDescription !== null &&
+                      <Text>
+                        <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                          Cliente POS:{" "}
+                        </Text>
+                        {order?.clientPosDescription}
+                      </Text>
+                    }
                     <Text>
                       <Text style={{ fontFamily: "Helvetica-Bold" }}>
                         Nit:{" "}

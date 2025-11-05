@@ -16,7 +16,7 @@ export default function Navbar() {
 
   const handleClickImg = (e) => {
     if(user.role==='aprobador'){
-      return navigate('/solicitudes')
+      return navigate('/clientes/pos')
     }else{
       return navigate('/inicio')
     }

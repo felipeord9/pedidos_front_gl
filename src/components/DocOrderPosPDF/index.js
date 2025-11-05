@@ -234,7 +234,15 @@ export default function DocOrderPosPDF({ order }) {
                         Sucursal:{" "}
                       </Text>
                       {order?.branchDescription}
-                    </Text>   
+                    </Text>  
+                    {order.clientPosDescription !== null &&
+                      <Text>
+                        <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                          Cliente POS:{" "}
+                        </Text>
+                        {order?.clientPosDescription}
+                      </Text>
+                    } 
                     <Text style={{ }}>
                       <Text style={{ fontWeight: 'extrabold' }}>
                         Nit:{" "}
