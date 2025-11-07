@@ -188,6 +188,7 @@ export default function AddClientPos() {
                     setEditando(false);
                     setClienteSeleccionado(null);
                     setSuggestionsClients([]);
+                    window.location.reload()
                   });
                 }
               })
