@@ -243,6 +243,14 @@ export default function DocOrderPosPDF({ order }) {
                         {order?.clientPosDescription}
                       </Text>
                     } 
+                    {order.clientPosDirection !== null &&
+                      <Text>
+                        <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                          Dirección:{" "}
+                        </Text>
+                        {order?.clientPosDirection}
+                      </Text>
+                    }
                     <Text style={{ }}>
                       <Text style={{ fontWeight: 'extrabold' }}>
                         Nit:{" "}
