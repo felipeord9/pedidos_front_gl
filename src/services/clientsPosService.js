@@ -67,6 +67,16 @@ export const createClientsPOS = async (body) => {
   return data
 }
 
+export const createMultiple = async (body) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.post(`${url}/multiple/clients`, body, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 export const updateClientsPOS = async (id, body) => {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.patch(`${url}/${id}`, body, {

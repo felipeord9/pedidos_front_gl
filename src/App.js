@@ -16,6 +16,7 @@ import Page404 from "./pages/Page404"
 import Navbar from './components/Navbar';
 import PrivateRoute from "./components/PrivateRoute";
 import Requests from './pages/requests';
+import ExcelClientsPos from './pages/SubirExcelClientsPos';
 import { AuthContextProvider } from './context/authContext';
 import { ClientContextProvider } from "./context/clientContext";
 import "./App.css";
@@ -50,6 +51,7 @@ function App() {
               <Route path='*' element={<Page404 />} />
 
               <Route path='/descarga' element={<Descarga/>} />
+              <Route path='/excel/clients/pos' element={<ExcelClientsPos/>} />
 
             </Routes>
           </div>
