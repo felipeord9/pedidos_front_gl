@@ -11,6 +11,9 @@ import {
   findOrders,
   findOrdersBySeller,
   findOrdersByAgency,
+  findInitialOrders,
+  findInitialBySeller,
+  findInitialByAgency,
 } from "../../services/orderService";
 import './styles.css'
 import Swal from "sweetalert2";
@@ -28,6 +31,8 @@ export default function Orders() {
   const navigate = useNavigate();
   const refTable = useRef();
   const [typeFillDate, setTypeFillDate] = useState('');
+  const [isLoadingAll, setIsLoadingAll] = useState(false);
+  const [hasLoadedInitial, setHasLoadedInitial] = useState(false);
 
   useEffect(() => {
     getAllOrders();
@@ -35,28 +40,76 @@ export default function Orders() {
 
   const getAllOrders = () => {
     setLoading(true)
-    findOrders()
+    findInitialOrders()
       .then(({ data }) => {
         setOrders(data);
         setSuggestions(data);
-        setLoading(false)
+        setLoading(false);
+        setHasLoadedInitial(true);
       })
       .catch(() => {
-        findOrdersBySeller(user.rowId)
+        findInitialBySeller(user.rowId)
           .then(({ data }) => {
             setOrders(data);
             setSuggestions(data);
-            setLoading(false)
+            setLoading(false);
+            setHasLoadedInitial(true);
           })
           .catch(() => {
-            findOrdersByAgency(user.rowId).then(({ data }) => {
+            findInitialByAgency(user.rowId).then(({ data }) => {
               setOrders(data);
               setSuggestions(data);
-              setLoading(false)
+              setLoading(false);
+              setHasLoadedInitial(true);
             });
           });
       });
   };
+
+  useEffect(() => {
+    // 2. Carga Completa en Segundo Plano
+    const fetchAll = async () => {
+      if (!hasLoadedInitial || isLoadingAll) return; // Esperar a que la inicial se complete
+      
+      setIsLoadingAll(true);
+      try {
+        findOrders()
+        .then(({ data }) => {
+          setOrders(data);
+          setSuggestions(data);
+          setLoading(false);
+          setHasLoadedInitial(false);
+        })
+        .catch(() => {
+          findOrdersBySeller(user.rowId)
+            .then(({ data }) => {
+              setOrders(data);
+              setSuggestions(data);
+              setLoading(false);
+              setHasLoadedInitial(false);
+            })
+            .catch(() => {
+              findOrdersByAgency(user.rowId).then(({ data }) => {
+                setOrders(data);
+                setSuggestions(data);
+                setLoading(false);
+                setHasLoadedInitial(false);
+              });
+            });
+        });
+      } catch (error) {
+        console.error('Error fetching all orders:', error);
+      } finally {
+        setIsLoadingAll(false);
+      }
+    };
+    
+    // Si la carga inicial se completó, lanzamos la carga completa
+    if (hasLoadedInitial) {
+        fetchAll(); 
+    }
+    
+  }, [hasLoadedInitial]); // Se ejecuta cuando la carga inicial ha terminado
 
   const getFilteredOrders = async () => {
     if (filterDate.initialDate && filterDate.finalDate) {

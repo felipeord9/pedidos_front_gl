@@ -12,6 +12,16 @@ const findOrders = async () => {
   return data
 }
 
+const findInitialOrders = async () => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/initial/`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 const findOrdersBySeller = async (id) => {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.get(`${url}/seller/${id}`, {
@@ -22,9 +32,29 @@ const findOrdersBySeller = async (id) => {
   return data
 }
 
+const findInitialBySeller = async (id) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/seller/initial/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 const findOrdersByAgency = async (id) => {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.get(`${url}/co/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
+const findInitialByAgency = async (id) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/co/initial/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -90,8 +120,11 @@ const deleteOrder = (id) => {
 
 export { 
   findOrders,
+  findInitialOrders,
   findOrdersBySeller,
+  findInitialBySeller,
   findOrdersByAgency,
+  findInitialByAgency,
   findFilteredOrders, 
   createOrder,
   updateOrder,

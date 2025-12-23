@@ -162,7 +162,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
       center: true,
       cell: (row, index, column, id) => (
         <select
-          id={row.id}
+          id={row ? row?.id : null}
           className={`
               form-control form-control-sm border border-2 border-${
                 styleStatus[row.state]

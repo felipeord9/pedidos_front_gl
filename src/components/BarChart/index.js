@@ -19,7 +19,7 @@ export function DiagramaBarras({ suggestions }) {
         />
         <VictoryAxis
             dependentAxis
-            label="Total"
+            /* label="Total" */
             tickFormat={(t) => Number.isInteger(t) ? t : null} // 🔹 Solo enteros
             style={{
                 axisLabel: { padding: 20, fontWeight: "bold" },
@@ -53,8 +53,8 @@ export function DiagramaBarras({ suggestions }) {
 
     // 🔹 Lista de todos los coId que deben aparecer, en el orden deseado
     const allCoIds = [
-        "005", "008", "012", "013", "014", "015", "016", "017",  
-        "023", "027", "030", "034", "038", "039",
+        "004", "005", "007", "008", "010", "011", "012", "013", "014", "015",  
+        "016", "017", "023", "027", "030", "031", "034", "037", "038", "039",
     ];
 
     // 🔹 Combinar los datos reales con los faltantes (total = 0)
