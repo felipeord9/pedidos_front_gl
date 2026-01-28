@@ -79,6 +79,7 @@ export default function Orders() {
           setSuggestions(data);
           setLoading(false);
           setHasLoadedInitial(false);
+          setIsLoadingAll(false);
         })
         .catch(() => {
           findOrdersBySeller(user.rowId)
@@ -87,6 +88,7 @@ export default function Orders() {
               setSuggestions(data);
               setLoading(false);
               setHasLoadedInitial(false);
+              setIsLoadingAll(false);
             })
             .catch(() => {
               findOrdersByAgency(user.rowId).then(({ data }) => {
@@ -94,6 +96,7 @@ export default function Orders() {
                 setSuggestions(data);
                 setLoading(false);
                 setHasLoadedInitial(false);
+                setIsLoadingAll(false);
               });
             });
         });
@@ -177,12 +180,17 @@ export default function Orders() {
       const [co, id] = search.split("-");
       let filterOrders;
       if(co && id) {
-        filterOrders = orders.find((elem) => elem.coId === co && elem.rowId === id)
-        setSuggestions([filterOrders])
-      } else {
+        let filterCo = orders.filter((elem) => elem.coId === co);
+        let result;
+        if(filterCo){
+          result = orders.filter((elem) => elem.rowId === parseInt(id))
+        }
+        /* filterOrders = orders.filter((elem) => elem.coId === co && elem.rowId === id) */
+        setSuggestions(result)
+      } /* else {
         filterOrders = orders.filter((elem) => elem.state.includes(search.toLowerCase()))
         setSuggestions(filterOrders)
-      }
+      } */
     } else {
       getAllOrders();
     }
