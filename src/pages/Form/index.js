@@ -6,7 +6,7 @@ import AddProducts from "../../components/AddProducts";
 import AuthContext from "../../context/authContext";
 import ClientContext from "../../context/clientContext";
 import { createOrder, deleteOrder } from "../../services/orderService";
-import { getAllClients, getAllClientsPOS } from "../../services/clientService";
+import { getAllClients, getAllClientsPOS, getOneClientByNit } from "../../services/clientService";
 import { findClients } from "../../services/clientsPosService";
 import { getAllAgencies } from "../../services/agencyService";
 import { sendMail } from "../../services/mailService";
@@ -60,6 +60,22 @@ export default function Form() {
         console.log('error')
       });
   }
+
+  const findClientById = (id, array, setItem) => {
+    const item = array.find((elem) => elem.nit === id);
+    if (item) {
+      setLoading(true)
+      getOneClientByNit(id)
+      .then(({data})=>{
+        setLoading(false)
+        setItem(data);
+      })
+    } else {
+      setItem(null);
+      setSucursal(null);
+      selectBranchRef.current.selectedIndex = 0;
+    }
+  };
 
   const findById = (id, array, setItem) => {
     const item = array.find((elem) => elem.nit === id);
@@ -332,7 +348,7 @@ export default function Form() {
                       handlerChangeSearch(e);
                       invoiceType
                         ? findById(value, clientsPOS, setClient)
-                        : findById(value, clientes, setClient);
+                        : findClientById(value, clientes, setClient);
                     }}
                     min={0}
                     required
@@ -346,6 +362,7 @@ export default function Form() {
                     item={client}
                     setItem={setClient}
                     invoiceType={invoiceType}
+                    setLoading={setLoading}
                   />
                 </div>
               </div>

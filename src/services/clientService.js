@@ -27,6 +27,16 @@ function getOneClient(id) {
     .then(res => res.data)
 }
 
+async function getOneClientByNit(nit) {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/nit/${nit}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 async function createClientPOS(body) {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.post(url2, body, {
@@ -51,6 +61,7 @@ export {
   getAllClients,
   getAllClientsPOS,
   getOneClient,
+  getOneClientByNit,
   createClientPOS,
   updateClientPOS
 }

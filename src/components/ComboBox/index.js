@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import ClientContext from "../../context/clientContext";
+import { getOneClientByNit } from "../../services/clientService";
 import "./styles.css";
 
-function ComboBox({ id, options, item, setItem, invoiceType }) {
+function ComboBox({ id, options, item, setItem, invoiceType , setLoading }) {
   const { client } = useContext(ClientContext);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState(null);
@@ -40,10 +41,22 @@ function ComboBox({ id, options, item, setItem, invoiceType }) {
 
   const selectedOption = async (e) => {
     const { value } = e.target;
-    const object = JSON.parse(value);
-    setItem(object);
-    setInputValue(object.razonSocial);
-    setSuggestions(options);
+    if(invoiceType){
+      const object = JSON.parse(value);
+      setItem(object);
+      setInputValue(object.razonSocial);
+      setSuggestions(options);
+    }else{
+      const parsedValue = JSON.parse(value);
+      setLoading(true)
+      getOneClientByNit(parsedValue.nit)
+      .then(({data})=>{
+        setLoading(false)
+        setItem(data);
+        setInputValue(data.razonSocial);
+        setSuggestions(options);
+      })
+    }
   };
 
   return (
