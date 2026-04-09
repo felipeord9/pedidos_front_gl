@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import * as Bi from "react-icons/bi";
 import TableProducts from "../TableProducts";
 import { getAllProducts } from "../../services/productService";
+import { findPriceWithCo } from "../../services/precioService"
 
-function AddProducts({ productosAgr, setProductosAgr }) {
+function AddProducts({ productosAgr, setProductosAgr , user, co}) {
   const [products, setProducts] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const [listaSeleccionado, setListaSeleccionado] = useState(null);
+  const [listaPrecios, setListaPrecios] = useState([]);
   const [datos, setDatos] = useState({
     idProducto: "",
     description: "",
@@ -15,6 +18,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     precio: "",
   });
   const ref = useRef();
+  const listRef = useRef();
 
   useEffect(() => {
     getAllProducts().then((res) => {
@@ -66,16 +70,65 @@ function AddProducts({ productosAgr, setProductosAgr }) {
     });
   };
 
+  const busquedaPrecio = (referencia, centOperacion) => {
+    findPriceWithCo(referencia, centOperacion)
+    .then(({data})=>{
+      const precios = data
+      const precio = precios.filter((item)=>item.precioSugerido !== 0)
+
+      //funcion para reducir el resultado por fechas y dejar la fecha del precio mas actual
+      const reduce = precio.reduce((acc, item)=>{
+        // Si no existe el IdListaPrecio en el acumulador, lo añadimos
+        if (!acc[item.IdListaPrecio]) {
+          acc[item.IdListaPrecio] = item;
+        } else {
+          // Comparamos las fechas y mantenemos la más actualizada
+          const fechaActual = new Date(acc[item.IdListaPrecio].fechaActivacion);
+          const fechaNueva = new Date(item.fechaActivacion);
+                  
+          if (fechaNueva > fechaActual) {
+            acc[item.IdListaPrecio] = item;
+          }
+        }
+        return acc;
+      },{})
+      if(reduce.length !== 0){
+        const resultado = Object.values(reduce);
+        setListaPrecios(resultado)
+      }
+    })
+  }
+
   const findById = (e) => {
     const { value } = e.target;
-    const item = products.find((elem) => parseInt(elem.item.codigo) === parseInt(value));
+      if(value > 1){
+      const item = products.find((elem) => parseInt(elem.item.codigo) === parseInt(value));
+      if(user && user.role === 'admin' && co){
+        busquedaPrecio(value, co.id)
+      } else if(user && (user.role === 'agencia' || user.role === 'vendedor') && user.co !== null){
+        busquedaPrecio(value, user.co)
+      }
 
-    if (item) {
-      setProductoSeleccionado(item);
-    } else {
-      setProductoSeleccionado(null);
+      if (item) {
+        setProductoSeleccionado(item);
+      } else {
+        setProductoSeleccionado(null);
+      }
     }
   };
+
+  const handleChangeList = (e) => {
+    const { value } = e.target;
+    //filtramos los resultados de lista de precios por fecha con el id de la lista del item
+    const listAndPrice = listaPrecios.filter((item)=>item.IdListaPrecio === value)
+    //guardamos en una constante el precio minimo del item resultante
+    const uniquePrice = listAndPrice.map((item)=>item.precioMinimo)
+    setListaSeleccionado(value);
+    setDatos({
+      ...datos,
+      precio: formater(uniquePrice)
+    })
+  }
 
   const handlerSubmit = (e) => {
     e.preventDefault();
@@ -88,6 +141,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
       description: productoSeleccionado.item.descripcion,
       amount: Number(datos.cantidad),
       um: productoSeleccionado.item.um,
+      lista: listaSeleccionado,
       price: datos.precio,
       total: formater(
         Number(datos.cantidad) * Number(datos.precio.split(".").join(""))
@@ -116,6 +170,7 @@ function AddProducts({ productosAgr, setProductosAgr }) {
       listaPrecios: "",
       precio: "",
     });
+    setListaSeleccionado('')
   };
 
   return (
@@ -123,7 +178,8 @@ function AddProducts({ productosAgr, setProductosAgr }) {
       <div className="bg-light rounded shadow-sm p-3 mb-2">
         <div>
           <label className="fw-bold">AGREGAR PRODUCTOS</label>
-          <form className="row row-cols-sm-2" /* onSubmit={handlerSubmit} */>
+          <form className="" /* onSubmit={handlerSubmit} */>
+          <div className="d-flex flex-row w-100 gap-3">
             <div className="col w-25">
               <label>Referencia:</label>
               <input
@@ -189,7 +245,9 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 required
               />
             </div>
-            <div className="w-50">
+          </div>
+          <div className="row row-cols-3 mt-1">
+            <div className="">
               <label>Cantidad:</label>
               <input
                 id="cantidad"
@@ -202,17 +260,33 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 required
               />
             </div>
-            {/* <div className="">
+            <div className="">
               <label>Lista de precios:</label>
-              <input
-                id="listaPrecios"
-                value={datos.listaPrecios}
-                className="form-control form-control-sm"
-                autoComplete="off"
-                onChange={handlerChange}
-              />
-            </div> */}
-            <div className="w-50">
+              <select
+                ref={listRef}
+                value={listaSeleccionado}
+                className="form-select form-select-sm"
+                onChange={handleChangeList}
+                disabled={!productoSeleccionado}
+                required
+              >
+                <option value="" selected disabled>
+                  -- SELECCIONE --
+                </option>
+                {listaPrecios
+                  .sort((a, b) => parseInt(a.IdListaPrecio) - parseInt(b.IdListaPrecio))
+                  .map((elem, index) => (
+                    <option key={index} value={elem.IdListaPrecio}>
+                      {elem.IdListaPrecio} - {elem.listPrice.descripcion}
+                    </option>
+                  ))
+                }
+                <option value="">
+                  Ninguno
+                </option>
+              </select>
+            </div>
+            <div className="">
               <label>Precio:</label>
               <input
                 id="precio"
@@ -220,10 +294,12 @@ function AddProducts({ productosAgr, setProductosAgr }) {
                 placeholder="Completa este campo para agregar"
                 min={50}
                 value={datos.precio}
+                disabled={listaSeleccionado}
                 className="form-control form-control-sm"
                 onChange={handlerChangePrice}
               />
             </div>
+          </div> 
             <div className="d-flex justify-content-center w-100 mt-2">
               <button
                 type="submit"

@@ -36,10 +36,21 @@ async function lookByInstallAndItem(id, item) {
   return data
 }
 
+async function findPriceWithCo(ref, co) {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.get(`${url}/ref/${ref}/co/${co}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 export {
   getAllPrecios,
   getOneCosto,
   getOne,
   getOneByInstall,
-  lookByInstallAndItem
+  lookByInstallAndItem,
+  findPriceWithCo,
 }

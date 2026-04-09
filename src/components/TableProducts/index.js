@@ -70,6 +70,7 @@ function TableProducts({ list, setList, formater }) {
             <th>Descripción</th>
             <th style={{ width: 50 }}>Cantidad</th>
             <th style={{ width: 15 }}>UM</th>
+            <th>Lista Precio</th>
             <th>Precio</th>
             <th>Valor total</th>
             <th style={{ width: 49 }}>
@@ -96,6 +97,7 @@ function TableProducts({ list, setList, formater }) {
               <td className="text-start">{elem.description}</td>
               <td>{Number(elem.amount).toFixed(2)}</td>
               <td>{elem.um}</td>
+              <td className="text-end">{elem.lista}</td>
               <td className="text-end">${elem.price}</td>
               <td className="text-end">${elem.total}</td>
               <td>
@@ -119,7 +121,7 @@ function TableProducts({ list, setList, formater }) {
         <tfoot>
           <tr>
             <td className="fw-bold">TOTAL</td>
-            <td colSpan={4}></td>
+            <td colSpan={5}></td>
             <td className="fw-bold text-end">${list.total}</td>
             <td className="fw-bold text-end"></td>
           </tr>

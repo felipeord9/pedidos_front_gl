@@ -471,7 +471,6 @@ export default function Form() {
                 </div>
               </div>
             }
-            {JSON.stringify(clienteSeleccionado)}
             <hr className="my-1" />
             <div className="d-flex flex-row gap-4">
               <div className="w-100">
@@ -518,6 +517,8 @@ export default function Form() {
         <AddProducts
           productosAgr={productosAgr}
           setProductosAgr={setProductosAgr}
+          user={user}
+          co={agencia}
         />
         <div className="d-flex flex-column mb-3">
           <label className="fw-bold">OBSERVACIONES</label>
