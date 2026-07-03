@@ -15,9 +15,14 @@ export default function Login() {
 
   useEffect(() => {
     /* if (isLogged) navigate("/inicio"); */
-    if (isLogged && user.role==='aprobador' || isLogged && user.role==='precios' ) navigate('/clientes/pos')
-      else if(isLogged){
-        navigate("/inicio");
+    if (isLogged && user.role==='aprobador' || isLogged && user.role==='precios' ) {
+      navigate('/clientes/pos')
+    }
+    if (isLogged && user.role==='comercial'){
+      navigate('/commercial/catalog')
+    }
+    else if(isLogged){
+      navigate("/inicio");
     }
   }, [isLogged, navigate]);
 

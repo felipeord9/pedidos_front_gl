@@ -4,6 +4,7 @@ import * as FaIcons from "react-icons/fa"
 import * as LiaIcons from "react-icons/lia"
 import { MdRequestPage } from "react-icons/md";
 import { HiBuildingStorefront } from "react-icons/hi2";
+import { GrCatalog } from "react-icons/gr";
 
 export const NavBarData = [
   {
@@ -26,13 +27,6 @@ export const NavBarData = [
     icon: <MdRequestPage  />,
     cName: "nav-text",
     access: ['vendedor','agencia']
-  },
-  {
-    title: "Usuarios",
-    path: "/usuarios",
-    icon: <AiIcons.AiOutlineUser />,
-    cName: "nav-text",
-    access: ['admin']
   },
   {
     title: "Agencias POS",
@@ -59,6 +53,20 @@ export const NavBarData = [
     title: "Vendedores POS",
     path: "/pos/vendedores",
     icon: <FaIcons.FaUserSecret />,
+    cName: "nav-text",
+    access: ['admin']
+  },
+  {
+    title: "Catálogo",
+    path: "/commercial/catalog",
+    icon: <GrCatalog />,
+    cName: "nav-text",
+    access: ['admin', 'comercial', 'vendedor']
+  },
+  {
+    title: "Usuarios",
+    path: "/usuarios",
+    icon: <AiIcons.AiOutlineUser />,
     cName: "nav-text",
     access: ['admin']
   },

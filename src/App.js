@@ -9,6 +9,9 @@ import ClientsPos from './pages/ClientsPos'
 import AddClientPos from './pages/addClientPos';
 import Branches from './pages/Branches';
 import Sellers from './pages/Sellers';
+import CommercialCatalog from './pages/CommercialCatalog';
+import Criterio from './pages/Criterio';
+import ShowProductCatalog from './pages/ShowProductCatalog';
 import ChangePassword from './pages/ChangePassword';
 import SendRecoveryPassword from "./pages/SendRecoveryPassword"
 import RecoveryPassword from './pages/RecoveryPassword';
@@ -45,6 +48,9 @@ function App() {
               <Route path='/edit/client/pos/:id' element={<PrivateRoute component={AddClientPos} />} />
               <Route path='/pos/sucursales' element={<PrivateRoute component={Branches} />} />
               <Route path='/pos/vendedores' element={<PrivateRoute component={Sellers} />} />
+              <Route path='/commercial/catalog' element={<PrivateRoute component={CommercialCatalog} />} />
+              <Route path='/criterio' element={<PrivateRoute component={Criterio} />} />
+              <Route path='/show/product/:id' element={<PrivateRoute component={ShowProductCatalog} />} />
               <Route path='/cambiar/contrasena' element={<PrivateRoute component={ChangePassword} />} />
               <Route path='/enviar/recuperacion' element={<SendRecoveryPassword/>} />
               <Route path='/recuperacion/contrasena/:token' element={<RecoveryPassword/>} />
