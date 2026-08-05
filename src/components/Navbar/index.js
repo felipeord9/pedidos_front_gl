@@ -8,7 +8,7 @@ import { NavBarData } from "./NavbarData";
 import Badge from '@mui/material/Badge';
 import Stack from '@mui/material/Stack';
 import { LuRefreshCcw } from "react-icons/lu";
-import { compareProducts, create2, createCatalogo, findCatalog } from "../../services/catalogService";
+import { compareProducts, create2, createCatalogo, findCatalog, update2 } from "../../services/catalogService";
 import { updateNotification } from "../../services/notificationService";
 import { Modal, Button, Form } from "react-bootstrap";
 import Logo from "../../assets/logo-el-gran-langostino.png";
@@ -22,6 +22,7 @@ export default function Navbar() {
   const [buscando, setBuscando] = useState(false);
   const navigate = useNavigate();
 
+  //modal para crear
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState('');
   const closeModal = () => {
@@ -31,6 +32,17 @@ export default function Navbar() {
   const openModal = (e, notifi) => {
     setShowModal(true);
     setSelectedProduct(notifi)
+  };
+
+  //modal para editar
+  const [showModalUpdate, setShowModalUpdate] = useState(false);
+  const closeModalUpdate = () => {
+    setSelectedProduct('');
+    setShowModalUpdate(false);
+  };
+  const openModalUpdate = (e, notifi) => {
+    setSelectedProduct(notifi)
+    setShowModalUpdate(true);
   };
 
   const handleClickImg = (e) => {
@@ -60,7 +72,8 @@ export default function Navbar() {
     if(notifi.concept === 'crear'){
       openModal(e, notifi)
     }else if(notifi.concept === 'editar'){
-      navigate(`/show/product/${notifi.producId}`)
+      openModalUpdate(e, notifi)
+      /* navigate(`/show/product/${notifi.producId}`) */
     }
   };
 
@@ -139,6 +152,45 @@ export default function Navbar() {
     })
   }
 
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    const body = {
+      id: selectedProduct.producId
+    }
+    update2(body)
+    .then(()=>{
+      setSelectedProduct('');
+      setShowModalUpdate(false);
+      Swal.fire({
+        icon:'success',
+        title:'¡Correcto!',
+        text:'Se ha actualizado el producto de manera satisfactoria, ¿Deseas completar la información?.',
+        showConfirmButton:true,
+        confirmButtonColor: 'green',
+        confirmButtonText: 'Sí',
+        showDenyButton: true,
+        denyButtonColor: 'red',
+        denyButtonText: 'No',
+      })
+      .then(({isConfirmed, isDenied})=>{
+        if(isConfirmed){
+          navigate(`/show/product/${selectedProduct.producId}`);
+        }else if(isDenied){
+          window.location.reload();
+        }
+      })
+    })
+    .catch(()=>{
+      Swal.fire({
+        icon:'warning',
+        title:'¡ERROR!',
+        text:'Ha ocurrido un error al momento de actualizar el producto en el sistema, intenta mas tarde o comunícate con el área de sistemas.',
+        showConfirmButton:true,
+        confirmButtonColor: 'red'
+      })
+    })
+  }
+
   return (
     <>
       {isLogged && (
@@ -175,6 +227,37 @@ export default function Navbar() {
               </div>
             </Modal.Footer>
           </Modal>
+
+          {/* Modal para editar productos */}
+          <Modal show={showModalUpdate} onHide={closeModalUpdate} centered>
+            <Modal.Header closeButton>
+              <Modal.Title className='d-flex justify-content-center w-100 fw-bold' style={{fontSize: isMobile ? '16px':'25px'}}>Edición de producto</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group controlId="formWeight">
+                <label>Se va a proceder a hacer la actualización del producto: <strong>{selectedProduct.producId}</strong> en nuestro sistema, ¿Desea continuar?</label>
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <div className="d-flex justify-content-center gap-2 mt-2 w-100" >
+                <button
+                  className="btn btn-sm btn-success w-50"
+                  style={{fontSize: isMobile && 12}}
+                  onClick={(e)=>handleUpdate(e)}
+                >
+                  Actualizar
+                </button>
+                <button
+                  className="btn btn-sm btn-danger w-50"
+                  style={{fontSize: isMobile && 12}}
+                  onClick={(e)=>closeModalUpdate()}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </Modal.Footer>
+          </Modal>
+
           <div className={`d-flex flex-row justify-content-between align-items-center w-100 h-100 ${isMobile ? 'px-2' : 'px-4'} shadow`}>
             <div
               id="logo-header"

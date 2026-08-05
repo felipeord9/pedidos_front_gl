@@ -412,26 +412,9 @@ export default function ShowProductCatalog() {
               <div>
                 <div className="row row-cols-sm-2 gap-2 mt-2">
                   {/* img producto y empaque */}
-                  <div className="d-flex justify-content-center flex-column" style={{height: '45vh'}}>
+                  <div className="d-flex justify-content-center flex-column mb-1" style={{height: '45vh'}}>
                     <label className="fw-bold" style={{fontSize: isMobile ? 13 : 18}}>Imagen del producto:</label>
-                    <Button
-                      id="emp"
-                      component="label"
-                      role={undefined}
-                      variant="contained"
-                      className='w-100 me-2'                  
-                      color={uploadImgEmp ? 'success' : 'primary'}
-                      startIcon={uploadImgEmp ? <CheckCircleOutlineIcon /> : <CloudUploadIcon />}
-                    >
-                      {uploadImgEmp ? 'Archivo cargado' : 'Subir imagen'}
-                      <VisuallyHiddenInput
-                        id="emp"
-                        type="file"
-                        onChange={(e)=>handleUpload(e)}
-                        accept="image/*"
-                      />
-                    </Button>
-                    {imgEmp ?
+                    {(!editing && imgEmp) ?
                       <img
                       src={imgEmp}
                       alt="Previsualización"
@@ -439,13 +422,42 @@ export default function ShowProductCatalog() {
                       style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
                       onClick={(e)=>openModal(e,'emp')}
                       />
-                      :
-                      <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
+                      : (editing && uploadImgEmb) ?
+                        <img
+                        src={uploadImgEmb}
+                        alt="Previsualización"
+                        className="h-100"
+                        style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
+                        onClick={(e)=>openModal(e,'emp')}
+                        />
+                        :
+                        <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
                     }
                   </div> 
-                  <div className="d-flex justify-content-center flex-column" style={{height: '45vh'}}>
+                  <div>
+                    {(editing) &&
+                      <Button
+                        id="emp"
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        className='w-100 me-2 mb-1'                  
+                        color={uploadImgEmp ? 'success' : 'primary'}
+                        startIcon={uploadImgEmp ? <CheckCircleOutlineIcon /> : <CloudUploadIcon />}
+                      >
+                        {uploadImgEmp ? 'Cargado' : 'Subir'}
+                        <VisuallyHiddenInput
+                          id="emp"
+                          type="file"
+                          onChange={(e)=>handleUpload(e)}
+                          accept="image/*"
+                        />
+                      </Button>
+                    }
+                  </div>
+                  <div className="d-flex justify-content-center flex-column mb-1" style={{height: '45vh'}}>
                     <label className="fw-bold" style={{fontSize: isMobile ? 13 : 18}}>Imagen del empaque:</label>
-                    {imgEmb ?
+                    {(!editing && imgEmb) ?
                       <img
                         src={imgEmb}
                         alt="Previsualización"
@@ -453,15 +465,45 @@ export default function ShowProductCatalog() {
                         style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
                         onClick={(e)=>openModal(e,'emb')}
                       />
-                      :
-                      <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
+                      : (editing && uploadImgEmb) ?
+                        <img
+                          src={uploadImgEmb}
+                          alt="Previsualización"
+                          className="d-flex h-100"
+                          style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
+                          onClick={(e)=>openModal(e,'emb')}
+                        />
+                        :
+                        <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
                     }
                   </div> 
 
+                  <div>
+                    {(editing) &&
+                      <Button
+                        id="emb"
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        className='w-100 me-2 mb-1'                  
+                        color={uploadImgEmb ? 'success' : 'primary'}
+                        startIcon={uploadImgEmb ? <CheckCircleOutlineIcon /> : <CloudUploadIcon />}
+                      >
+                        {uploadImgEmb ? 'Cargado' : 'Subir'}
+                        <VisuallyHiddenInput
+                          id="emb"
+                          type="file"
+                          onChange={(e)=>handleUpload(e)}
+                          accept="image/*"
+                        />
+                      </Button>
+                    }
+                  </div>
+
                   {/* bolsa de presentación y codigo de barras */}
-                  <div className="d-flex justify-content-center flex-column" style={{height: '45vh'}}>
+                  <div className="d-flex justify-content-center flex-column mb-1" style={{height: '45vh'}}>
                     <label className="fw-bold" style={{fontSize: isMobile ? 13 : 18}}>Imagen presentación:</label>
-                    {imgPres ?
+                    {(!editing && imgPres) ?
                       <img
                         src={imgPres}
                         alt="Previsualización"
@@ -469,13 +511,42 @@ export default function ShowProductCatalog() {
                         style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
                         onClick={(e)=>openModal(e,'pres')}
                       />
-                      :
-                      <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
+                      : (editing && uploadImgPres) ?
+                        <img
+                          src={uploadImgPres}
+                          alt="Previsualización"
+                          className="d-flex h-100"
+                          style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
+                          onClick={(e)=>openModal(e,'pres')}
+                        />
+                        :
+                        <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
+                    }
+                  </div>
+                  <div>
+                    {editing &&
+                      <Button
+                        id="pres"
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        className='w-100 me-2 mb-1'                  
+                        color={imgPres ? 'success' : 'primary'}
+                        startIcon={imgPres ? <CheckCircleOutlineIcon /> : <CloudUploadIcon />}
+                      >
+                        {imgPres !== '' ? 'Cargado' : 'Subir'}
+                        <VisuallyHiddenInput
+                          id="pres"
+                          type="file"
+                          onChange={(e)=>handleUpload(e)}
+                          accept="image/*"
+                        />
+                      </Button>
                     }
                   </div> 
-                  <div className="d-flex justify-content-center flex-column" style={{height: '45vh'}}>
+                  <div className="d-flex justify-content-center flex-column mb-1" style={{height: '45vh'}}>
                     <label className="fw-bold" style={{fontSize: isMobile ? 13 : 18}}>Código de barras:</label>
-                    {barCode ?
+                    {(!editing && barCode) ?
                       <img
                         src={barCode}
                         alt="Previsualización"
@@ -483,10 +554,39 @@ export default function ShowProductCatalog() {
                         style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
                         onClick={(e)=>openModal(e,'bar')}
                       />
-                      :
-                      <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
+                      : (editing && uploadBarCode) ?
+                        <img
+                          src={uploadBarCode}
+                          alt="Previsualización"
+                          className="d-flex h-100"
+                          style={{ border: '2px solid #ccc', borderRadius: '10px' , cursor: 'pointer'}}
+                          onClick={(e)=>openModal(e,'bar')}
+                        />
+                        :
+                        <small className="text-muted d-block text-center d-flex h-100 justify-content-center align-items-center" style={{fontSize: 13}}>No se ha subido esta imagen aún</small>
                     }
                   </div> 
+                  <div>
+                    {editing &&
+                      <Button
+                        id="bar"
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        className='w-100 me-2 mb-1'                  
+                        color={barCode ? 'success' : 'primary'}
+                        startIcon={barCode ? <CheckCircleOutlineIcon /> : <CloudUploadIcon />}
+                      >
+                        {barCode !== '' ? 'Cargado' : 'Subir'}
+                        <VisuallyHiddenInput
+                          id="bar"
+                          type="file"
+                          onChange={(e)=>handleUpload(e)}
+                          accept="image/*"
+                        />
+                      </Button>
+                    }
+                  </div>
                 </div>
               </div>
               :

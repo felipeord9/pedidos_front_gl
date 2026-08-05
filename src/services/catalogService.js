@@ -79,6 +79,16 @@ const updateCatalogo = async (body) => {
   return data
 }
 
+const update2 = async (body) => {
+  const token = JSON.parse(localStorage.getItem("token"))
+  const { data } = await axios.patch(`${url2}/update`, body, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return data
+}
+
 const updateProdCatalog = async (id, body) => {
   const token = JSON.parse(localStorage.getItem("token"))
   const { data } = await axios.patch(`${url2}/${id}`, body, {
@@ -110,5 +120,6 @@ export {
   createCatalogo,
   create2,
   updateCatalogo,
+  update2,
   updateProdCatalog,
 }
